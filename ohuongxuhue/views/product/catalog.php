@@ -18,9 +18,13 @@ $products   = $products ?? [];
                 <a href="<?php echo esc_url($home_url); ?>">Trang Chủ</a> &rsaquo; <span>Đặc Sản Xứ Huế</span>
             </nav>
             <span class="catalog-hero-tag">🏺 Kho Tàng Hương Vị Cố Đô</span>
-            <h1 class="catalog-hero-title">Đặc Sản Huế Truyền Thống Chính Gốc</h1>
+            <h1 class="catalog-hero-title"><?php echo !empty($searchQuery) ? 'Kết quả tìm kiếm đặc sản' : 'Đặc Sản Huế Truyền Thống Chính Gốc'; ?></h1>
             <p class="catalog-hero-desc">
-                Tuyển chọn những tinh hoa ẩm thực trứ danh sông Hương núi Ngự, chế biến thủ công giữ trọn phong vị cổ truyền ngàn năm.
+                <?php if (!empty($searchQuery)): ?>
+                    Tìm thấy <?php echo count($products); ?> đặc sản đang bán cho “<?php echo htmlspecialchars($searchQuery); ?>”.
+                <?php else: ?>
+                    Tuyển chọn những tinh hoa ẩm thực trứ danh sông Hương núi Ngự, chế biến thủ công giữ trọn phong vị cổ truyền ngàn năm.
+                <?php endif; ?>
             </p>
         </div>
     </section>
@@ -79,6 +83,7 @@ $products   = $products ?? [];
                 <div class="catalog-card" 
                      data-id="<?php echo $item['id']; ?>"
                      data-name="<?php echo htmlspecialchars($item['name']); ?>"
+                     data-search="<?php echo esc_attr(html_entity_decode(strip_tags(implode(' ', [$item['name'], $item['category'], $item['short_desc'] ?? '', $item['description'] ?? ''])), ENT_QUOTES, 'UTF-8')); ?>"
                      data-category="<?php echo htmlspecialchars($item['category']); ?>"
                      data-price="<?php echo $item['raw_price']; ?>"
                      data-rating="<?php echo $item['rating']; ?>">
@@ -125,7 +130,7 @@ $products   = $products ?? [];
                         <div class="card-footer-row">
                             <div class="card-price"><?php echo htmlspecialchars($item['price']); ?></div>
                             <div class="card-btns" style="display: flex; gap: 6px; align-items: center;">
-                                <button type="button" class="btn-card-buy-ajax" onclick="addCartAjaxCatalog(<?php echo $item['id']; ?>, '<?php echo addslashes($item['name']); ?>')" style="background:#fdf6e7; color:#8b1d24; border:1px solid #d4af37; padding:7px 11px; font-size:11px; border-radius:15px; font-weight:700; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:3px;">
+                                <button type="button" class="btn-card-buy-ajax" onclick="addCartAjax(<?php echo (int) $item['id']; ?>, <?php echo htmlspecialchars(json_encode($item['name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP), ENT_QUOTES, 'UTF-8'); ?>)" style="background:#fdf6e7; color:#8b1d24; border:1px solid #d4af37; padding:7px 11px; font-size:11px; border-radius:15px; font-weight:700; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:3px;">
                                     🛒 Thêm vào giỏ
                                 </button>
                                 <a href="?controller=cart&action=add&id=<?php echo $item['id']; ?>&redirect=<?php echo urlencode($checkoutUrl); ?>" class="btn-card-buy-now" style="background:linear-gradient(135deg, #8b1d24, #6b1218); color:#fff; padding:7px 11px; font-size:11px; text-decoration:none; border-radius:15px; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:3px; box-shadow: 0 3px 8px rgba(139,29,36,0.3);">
@@ -139,7 +144,7 @@ $products   = $products ?? [];
         </div>
 
         <!-- Thông báo không tìm thấy kết quả -->
-        <div id="noResults" class="no-results-msg" style="display: none;">
+        <div id="noResults" class="no-results-msg" style="<?php echo empty($products) ? '' : 'display: none;'; ?>">
             <p>🏮 Không tìm thấy đặc sản phù hợp với từ khóa của bạn.</p>
             <button type="button" class="btn-reset-filter" onclick="resetFilters()">Xem tất cả đặc sản</button>
         </div>
@@ -297,7 +302,8 @@ function sortCatalog() {
 }
 
 function applyFilters() {
-    var keyword = document.getElementById('catalogSearchInput').value.toLowerCase().trim();
+    const normalize = text => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0111/g, 'd');
+    var keyword = normalize(document.getElementById('catalogSearchInput').value).trim();
     var stockOnly = document.getElementById('stockOnlyCheckbox') ? document.getElementById('stockOnlyCheckbox').checked : false;
     var cards = document.querySelectorAll('.catalog-card');
     var visibleCount = 0;
@@ -314,7 +320,8 @@ function applyFilters() {
                        (currentCatFilter === 'ban-chay' ? (rating >= 4.9) : (cat.toLowerCase().indexOf(currentCatFilter.toLowerCase()) !== -1));
         
         // Search check
-        var matchSearch = !keyword || (name.indexOf(keyword) !== -1) || (cat.toLowerCase().indexOf(keyword) !== -1);
+        var searchText = normalize(card.getAttribute('data-search') || name + ' ' + cat);
+        var matchSearch = !keyword || keyword.split(/\s+/).every(token => searchText.includes(token));
 
         // Price check
         var matchPrice = true;
@@ -347,6 +354,12 @@ function applyFilters() {
 }
 
 function resetFilters() {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('q')) {
+        ['q', 'cat', 'price', 'sort'].forEach(key => url.searchParams.delete(key));
+        window.location.assign(url.href);
+        return;
+    }
     document.getElementById('catalogSearchInput').value = '';
     document.getElementById('catalogSortSelect').value = 'default';
     if (document.getElementById('stockOnlyCheckbox')) document.getElementById('stockOnlyCheckbox').checked = false;
@@ -354,27 +367,6 @@ function resetFilters() {
     filterCatalog('all', document.querySelector('.filter-pill'));
 }
 
-function addCartAjaxCatalog(productId, productName) {
-    fetch('index.php?controller=cart&action=add&id=' + productId + '&ajax=1')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const badges = document.querySelectorAll('.cart-count-badge, #headerCartCount');
-                badges.forEach(b => {
-                    b.innerText = data.cart_count;
-                    b.style.display = 'inline-block';
-                });
-                alert('✓ Đã thêm "' + productName + '" vào giỏ hàng thành công!');
-            } else {
-                alert(data.message || 'Không thể thêm vào giỏ hàng.');
-            }
-        })
-        .catch(err => {
-            window.location.href = 'index.php?controller=cart&action=add&id=' + productId;
-        });
-}
-
-// Tự động nhận diện từ khóa tìm kiếm (q) và danh mục (cat) từ URL
 window.addEventListener('DOMContentLoaded', function() {
     var params = new URLSearchParams(window.location.search);
     var q = params.get('q');
@@ -413,3 +405,5 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
+
+<?php require __DIR__ . '/../layouts/cart-toast.php'; ?>

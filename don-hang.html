@@ -1,14 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <link rel="icon" type="image/x-icon" href="./images/logo.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <title>Lịch Sử Đơn Hàng Đã Đặt - O Hương Xứ Huế</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20261006-search-2">
     <link rel="stylesheet" href="hue-ambient.css?v=3.0.0">
+<script src="header-search.js?v=20261006-1" defer></script>
+<link rel="stylesheet" href="orders-table.css?v=20261017-table"><script src="orders-table.js?v=20261017-table" defer></script><link rel="stylesheet" href="responsive.css?v=20261029-2">
+<script src="responsive.js?v=20261029-2" defer></script>
 </head>
 <body>
     <!-- KHÔNG GIAN HOA VĂN TRỐNG ĐỒNG ĐÔNG SƠN HUẾ XOAY ĐỘNG (ROYAL ROTATING BRONZE DRUM BACKGROUND) -->
@@ -30,19 +34,12 @@
                 </div>
             </a>
 
-                        <div class="search-bar">
-                <select id="headerCategorySelect">
-                    <option value="">Tất cả đặc sản</option>
-                    <option value="ban-chay">🔥 Bán chạy nhất</option>
-                    <option value="Bánh">Bánh Huế</option>
-                    <option value="Mè Xửng">Mè Xửng &amp; Kẹo</option>
-                    <option value="Trà">Trà Cung Đình</option>
-                    <option value="Mắm">Mắm Cố Đô</option>
-                    <option value="Ăn Vặt">Đồ Ăn Vặt</option>
-                </select>
-                <input type="search" id="headerSearchInput" placeholder="Tìm kiếm đặc sản Huế thơm ngon...">
-                <button type="button" id="headerSearchBtn">🔍 Tìm kiếm</button>
-            </div>
+                        <form class="search-bar" role="search" method="get" action="ohuongxuhue/index.php" data-search-url="ohuongxuhue/index.php?controller=product&amp;action=ajax_search">
+                <input type="hidden" name="controller" value="dac-san">
+                <div class="search-input-wrapper"><input type="search" name="q" id="headerSearchInput" aria-label="Tìm kiếm đặc sản đang bán" placeholder="Tìm kiếm đặc sản Huế thơm ngon..." autocomplete="off"></div>
+                <button type="submit" id="headerSearchBtn">🔍 Tìm kiếm</button>
+                <div class="live-search-dropdown" id="liveSearchResults" aria-label="Gợi ý đặc sản" style="display: none;"></div>
+            </form>
 
             <div class="header-actions">
                 <a href="gio-hang.html" class="header-cart-action" title="Giỏ Hàng" style="text-decoration:none; position:relative; display:inline-flex; align-items:center;">
@@ -195,21 +192,21 @@
                     </ul>
                 </div>
             </li>
-            <li><a href="blog.html">Blog</a></li>
+            <li class="nav-item-blog"><a href="blog.html">BLOG <span class="nav-dropdown-caret">▾</span></a><ul class="nav-blog-submenu" aria-label="Chuyên mục Blog"><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=am-thuc">GÓC ẨM THỰC</a></li><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=du-lich">GÓC DU LỊCH</a></li></ul></li>
             <li><a href="lien-he.html">Liên hệ</a></li>
             <li><a href="cua-hang.html">Cửa hàng</a></li>
         </ul>
     </nav>
 
     <!-- TRANG ĐƠN HÀNG CHÍNH -->
-    <div class="orders-page-master">
+    <div class="orders-page-master orders-table-page">
         <section class="orders-hero-banner">
             <div class="orders-hero-content">
                 <nav class="orders-breadcrumb">
                     <a href="index.html">Trang Chủ</a> &rsaquo; <span>Đơn Hàng Của Tôi</span>
                 </nav>
-                <h1 class="orders-hero-title">📦 Lịch Sử Đơn Hàng Đã Đặt</h1>
-                <p class="orders-hero-desc">Theo dõi tiến độ chế biến, đóng gói và hành trình vận chuyển đặc sản Cố Đô đến tận tay bạn.</p>
+                <h1 class="orders-hero-title">Đơn hàng của tôi</h1>
+                <p class="orders-hero-desc">Xem đơn đã đặt và theo dõi trạng thái giao hàng.</p>
             </div>
         </section>
 
@@ -237,7 +234,6 @@
                 <h3>Liên Hệ Cửa Hàng</h3>
                 <p>📍 123 Đường Lê Lợi, TP. Huế</p>
                 <p>📞 Hotline: 0905.123.456</p>
-                <p>✉️ Email: lienhe@ohuongxuhue.com</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -255,7 +251,7 @@
     }
 
     function formatVND(amount) {
-        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " ₫";
+        return new Intl.NumberFormat("vi-VN").format(Number(amount) || 0) + " ₫";
     }
 
     var statusConfig = {
@@ -266,27 +262,18 @@
         'cancelled': { label: 'Đã Hủy', cls: 'status-cancelled', icon: '❌', step: 0 }
     };
 
+    function orderEscape(value) { return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
     function renderOrdersUI() {
         var container = document.getElementById('ordersAppContainer');
         var orders = [];
-        try { orders = JSON.parse(localStorage.getItem('ohx_orders')) || []; } catch(e){}
+        try { orders = JSON.parse(localStorage.getItem('ohx_orders')) || []; } catch(e){} if (!Array.isArray(orders)) orders = [];
 
         // Kiểm tra xem có mã đơn vừa đặt qua URL hay không
         var urlParams = new URLSearchParams(window.location.search);
         var recentCode = urlParams.get('order_success');
         var successAlertHtml = '';
 
-        if (recentCode) {
-            successAlertHtml = `
-                <div class="order-placed-success-alert">
-                    <div class="success-alert-icon">🎉</div>
-                    <div class="success-alert-body">
-                        <h3>Đặt Hàng Thành Công! Mã đơn của bạn là: <code>${recentCode}</code></h3>
-                        <p>Đơn hàng đã được chuyển ngay sang hệ thống tiếp nhận của O Hương Xứ Huế. Chúng tôi đang chuẩn bị những mẻ đặc sản thơm thảo nhất để chuyển phát đến bạn!</p>
-                    </div>
-                </div>
-            `;
-        }
+        if (recentCode) successAlertHtml = `<p class="orders-table-success" role="status">✓ Đã nhận đơn <strong>#${orderEscape(recentCode)}</strong>.</p>`;
 
         if (orders.length === 0) {
             container.innerHTML = successAlertHtml + `
@@ -303,133 +290,40 @@
         }
 
         var ordersListHtml = orders.map(function(order, orderIndex) {
-            var st = statusConfig[order.status] || statusConfig['pending'];
-            var step = st.step;
-
-            var stepperHtml = '';
-            if (order.status !== 'cancelled') {
-                stepperHtml = `
-                    <div class="order-progress-stepper">
-                        <div class="step-point ${step >= 1 ? 'active' : ''}">
-                            <div class="step-circle">1</div>
-                            <span class="step-text">Đã Tiếp Nhận</span>
-                        </div>
-                        <div class="step-line ${step >= 2 ? 'active' : ''}"></div>
-                        <div class="step-point ${step >= 2 ? 'active' : ''}">
-                            <div class="step-circle">2</div>
-                            <span class="step-text">Đã Duyệt Đơn</span>
-                        </div>
-                        <div class="step-line ${step >= 3 ? 'active' : ''}"></div>
-                        <div class="step-point ${step >= 3 ? 'active' : ''}">
-                            <div class="step-circle">3</div>
-                            <span class="step-text">Đang Giao Hàng</span>
-                        </div>
-                        <div class="step-line ${step >= 4 ? 'active' : ''}"></div>
-                        <div class="step-point ${step >= 4 ? 'active' : ''}">
-                            <div class="step-circle">4</div>
-                            <span class="step-text">Đã Hoàn Thành</span>
-                        </div>
-                    </div>
-                `;
-            }
-
-            var items = order.items || [];
-            var itemsHtml = items.map(function(item) {
-                var total = (parseInt(item.price_raw) || 0) * (parseInt(item.quantity) || 1);
-                return `
-                    <div class="order-item-line">
-                        <div class="order-item-thumb">
-                            <img src="${item.image}" alt="${item.name}">
-                        </div>
-                        <div class="order-item-details">
-                            <h5>${item.name}</h5>
-                            <span class="cat-tag">${item.category || 'Đặc Sản Huế'}</span>
-                        </div>
-                        <div class="order-item-qty">x ${item.quantity}</div>
-                        <div class="order-item-price">${formatVND(total)}</div>
-                    </div>
-                `;
-            }).join('');
-
-            var payText = order.payment_method === 'vietqr' ? 'Chuyển khoản VietQR / Ngân Hàng' : 'Thanh toán khi nhận hàng (COD)';
-
-            var cancelBtnHtml = '';
-            if (order.status === 'pending') {
-                cancelBtnHtml = `
-                    <button type="button" class="btn-order-cancel" onclick="cancelOrder(${orderIndex})" style="background:#fff; color:#e74c3c; border:1px solid #e74c3c; padding:6px 12px; border-radius:15px; cursor:pointer; font-size:12px; margin-left:10px;">
-                        ✕ Hủy đơn này
-                    </button>
-                `;
-            }
-
-            return `
-                <div class="order-card-item">
-                    <div class="order-card-header">
-                        <div class="order-header-left">
-                            <span class="order-code-badge">Mã Đơn: <strong>#${order.order_code}</strong></span>
-                            <span class="order-date-text">📅 Ngày đặt: ${order.created_at}</span>
-                        </div>
-                        <div class="order-header-right">
-                            <span class="order-status-pill ${st.cls}">
-                                ${st.icon} ${st.label}
-                            </span>
-                            ${cancelBtnHtml}
-                        </div>
-                    </div>
-
-                    ${stepperHtml}
-
-                    <div class="order-body-content">
-                        <div class="order-items-sublist">
-                            ${itemsHtml}
-                        </div>
-
-                        <div class="order-meta-info-box">
-                            <div class="meta-col">
-                                <span class="meta-label">👤 Người nhận:</span>
-                                <span class="meta-val"><strong>${order.customer_name}</strong> - 📞 ${order.customer_phone}</span>
-                            </div>
-                            <div class="meta-col">
-                                <span class="meta-label">📍 Địa chỉ nhận hàng:</span>
-                                <span class="meta-val">${order.customer_address}</span>
-                            </div>
-                            <div class="meta-col">
-                                <span class="meta-label">💳 Phương thức thanh toán:</span>
-                                <span class="meta-val">${payText}</span>
-                            </div>
-                            ${order.customer_note ? `
-                                <div class="meta-col">
-                                    <span class="meta-label">📝 Ghi chú:</span>
-                                    <span class="meta-val">${order.customer_note}</span>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-
-                    <div class="order-card-footer">
-                        <div class="footer-left-support">
-                            <span>Cần hỗ trợ đơn hàng này? Gọi ngay Hotline: <strong>0905.123.456</strong></span>
-                        </div>
-                        <div class="footer-right-total">
-                            <span class="total-label">Tổng thanh toán:</span>
-                            <span class="total-amount">${formatVND(order.total_amount)}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
+            var st = statusConfig[order.status] || {label:'Đang cập nhật',cls:'status-unknown'};
+            var items = Array.isArray(order.items) ? order.items : [];
+            var code = orderEscape(order.order_code);
+            var id = 'order-detail-' + orderIndex;
+            var buttonId = 'order-toggle-' + orderIndex;
+            var search = orderEscape(String(order.order_code || '') + ' ' + items.map(item => item.name || '').join(' '));
+            var payText = ({vietqr:'Chuyển khoản VietQR',bacs:'Chuyển khoản ngân hàng',cod:'Thanh toán khi nhận hàng'})[order.payment_method] || order.payment_method || 'Chưa có thông tin';
+            var itemRows = items.map(item => `<tr><td>${orderEscape(item.name)}</td><td>${orderEscape(item.price || formatVND(item.price_raw))}</td><td>×${Number(item.quantity ?? 1)}</td><td>${formatVND(Number(item.price_raw || 0)*Number(item.quantity ?? 1))}</td></tr>`).join('') || '<tr><td colspan="4">Chưa có chi tiết sản phẩm cho đơn này.</td></tr>';
+            var cancel = order.status === 'pending' ? `<button type="button" class="orders-cancel-local" onclick="cancelOrder(${orderIndex})">Hủy đơn</button>` : '';
+            return `<tr class="order-table-row" data-order-status="${orderEscape(order.status)}" data-order-search="${search}">
+                <th scope="row" class="orders-code-cell"><strong>#${code}</strong><small>${orderEscape(order.created_at)}</small></th>
+                <td class="orders-product-cell"><span>${orderEscape(items[0]?.name || 'Chưa có chi tiết sản phẩm')}</span>${items.length > 1 ? `<small>và ${items.length-1} món khác</small>` : ''}</td>
+                <td class="orders-status-cell"><span class="order-status-pill ${st.cls}">${st.label}</span></td>
+                <td class="orders-money orders-total-cell">${formatVND(order.total_amount)}</td>
+                <td class="orders-action-cell"><button type="button" class="orders-row-toggle" id="${buttonId}" aria-expanded="true" aria-controls="${id}">Thu gọn</button></td>
+            </tr><tr class="orders-detail-row" id="${id}"><td colspan="5"><div class="orders-expanded" role="region" aria-labelledby="${buttonId}">
+                <div class="orders-detail-header"><h3>Chi tiết đơn #${code}</h3><a href="tel:0342684980">Gọi hỗ trợ</a></div>
+                <dl class="orders-delivery-grid">
+                    <div><dt>Người nhận</dt><dd>${orderEscape(order.customer_name)}</dd></div>
+                    <div><dt>Số điện thoại</dt><dd>${orderEscape(order.customer_phone)}</dd></div>
+                    <div class="orders-address"><dt>Địa chỉ giao hàng</dt><dd>${orderEscape(order.customer_address)}</dd></div>
+                    <div><dt>Thanh toán</dt><dd>${orderEscape(payText)}</dd></div>
+                    ${order.customer_note ? `<div class="orders-address"><dt>Ghi chú</dt><dd>${orderEscape(order.customer_note)}</dd></div>` : ''}
+                </dl><div class="orders-detail-table-wrap"><table class="orders-detail-items"><thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th>SL</th><th>Thành tiền</th></tr></thead><tbody>${itemRows}</tbody></table></div>
+                ${cancel ? `<div style="margin-top:14px">${cancel}</div>` : ''}
+            </div></td></tr>`;
         }).join('');
-
-        container.innerHTML = successAlertHtml + `
-            <div class="orders-list-wrapper">
-                <div class="orders-count-heading">
-                    <h2>Danh Sách Đơn Hàng (${orders.length} đơn)</h2>
-                    <a href="dac-san.html" class="btn-order-more">&#43; Đặt Thêm Đặc Sản</a>
-                </div>
-                ${ordersListHtml}
-            </div>
-        `;
+        container.innerHTML = successAlertHtml + `<section class="orders-table-section" aria-labelledby="orders-table-title">
+            <div class="orders-table-heading"><div><h2 id="orders-table-title">Lịch sử đơn hàng</h2><span data-orders-count aria-live="polite">${orders.length} đơn hàng</span></div><a href="dac-san.html" class="orders-table-shop">+ Đặt thêm</a></div>
+            <div class="orders-table-toolbar" hidden><label class="orders-table-search"><span>Tìm đơn hàng</span><input type="search" data-orders-search placeholder="Mã đơn, tên món…" autocomplete="off"></label><label class="orders-table-filter"><span>Trạng thái</span><select data-orders-status><option value="">Tất cả trạng thái</option>${Object.entries(statusConfig).map(([key,state]) => `<option value="${key}">${state.label}</option>`).join('')}</select></label></div>
+            <div class="orders-data-wrap"><table class="orders-data-table" role="table"><caption class="orders-table-sr-only">Danh sách đơn hàng</caption><thead><tr><th scope="col">Đơn hàng</th><th scope="col">Sản phẩm</th><th scope="col">Trạng thái</th><th scope="col" class="orders-money">Tổng tiền</th><th scope="col"><span class="orders-table-sr-only">Thao tác</span></th></tr></thead><tbody>${ordersListHtml}<tr class="orders-no-results" hidden><td colspan="5">Không tìm thấy đơn phù hợp. Hãy thử từ khóa hoặc trạng thái khác.</td></tr></tbody></table></div>
+        </section>`;
+        if (window.OHXOrdersTable) window.OHXOrdersTable.init(container.querySelector('.orders-table-section'));
     }
-
     function cancelOrder(index) {
         if (!confirm('Bạn có chắc muốn hủy đơn hàng này không?')) return;
         var orders = JSON.parse(localStorage.getItem('ohx_orders')) || [];
@@ -447,5 +341,7 @@
     </script>
     <!-- Trải Nghiệm Độc Bản: Không Gian Cố Đô -->
     <script src="hue-ambient.js?v=3.0.0"></script>
+    <link rel="stylesheet" href="contact-widget.css?v=20261029-social">
+    <script src="contact-widget.js?v=20261029-facebook" defer></script>
 </body>
 </html>

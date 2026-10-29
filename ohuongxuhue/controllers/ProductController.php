@@ -23,11 +23,17 @@ class ProductController extends BaseController {
         // Lấy danh sách sản phẩm tương tự
         $relatedProducts = $this->productModel->getRelatedProducts($id, 4);
 
-        // Lấy danh sách đánh giá & thống kê sao từ ReviewModel
-        require_once __DIR__ . '/../models/ReviewModel.php';
-        $reviewModel = new ReviewModel();
-        $reviews     = $reviewModel->getReviewsByProductId($id);
-        $ratingStats = $reviewModel->getProductRatingStats($id);
+        // Phần đánh giá là tùy chọn; thiếu module không làm dừng trang sản phẩm.
+        $reviewFile = __DIR__ . '/../models/ReviewModel.php';
+        $reviewsEnabled = is_file($reviewFile);
+        $reviews = [];
+        $ratingStats = ['average' => 0, 'total' => 0, 'star_counts' => [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0]];
+        if ($reviewsEnabled) {
+            require_once $reviewFile;
+            $reviewModel = new ReviewModel();
+            $reviews = $reviewModel->getReviewsByProductId($id);
+            $ratingStats = $reviewModel->getProductRatingStats($id);
+        }
 
         // Render ra view product/detail
         $this->render('product/detail', [
@@ -36,6 +42,7 @@ class ProductController extends BaseController {
             'product'         => $product,
             'relatedProducts' => $relatedProducts,
             'reviews'         => $reviews,
+            'reviewsEnabled'  => $reviewsEnabled,
             'ratingStats'     => $ratingStats
         ]);
     }
@@ -43,139 +50,19 @@ class ProductController extends BaseController {
     /**
      * API Tìm kiếm thông minh tức thì (Live AJAX Search)
      */
-        public function ajax_search() {
+    public function ajax_search() {
         header('Content-Type: application/json; charset=utf-8');
-
+        header('Cache-Control: no-store');
         $query = sanitize_text_field($_GET['q'] ?? '');
-        $cat   = sanitize_text_field($_GET['cat'] ?? '');
-
-        if (mb_strlen($query, 'UTF-8') < 1 && empty($cat)) {
-            echo json_encode(['success' => true, 'products' => []]);
-            exit;
-        }
-
-        $allProducts = $this->productModel->getAllProductsWithStock();
         $results = [];
-
-        $qLower = mb_strtolower($query, 'UTF-8');
-        $qPlain = $this->stripAccents($query);
-        $catLower = mb_strtolower($cat, 'UTF-8');
-        $catPlain = $this->stripAccents($cat);
-
-        foreach ($allProducts as $p) {
-            $nameLower = mb_strtolower($p['name'] ?? '', 'UTF-8');
-            $descLower = mb_strtolower($p['description'] ?? '', 'UTF-8');
-            $cNameLower = mb_strtolower($p['category'] ?? '', 'UTF-8');
-
-            $namePlain = $this->stripAccents($p['name'] ?? '');
-            $descPlain = $this->stripAccents($p['description'] ?? '');
-            $cNamePlain = $this->stripAccents($p['category'] ?? '');
-
-            $matchKeyword = empty($query) || (
-                mb_strpos($nameLower, $qLower) !== false || 
-                mb_strpos($descLower, $qLower) !== false ||
-                mb_strpos($namePlain, $qPlain) !== false ||
-                mb_strpos($descPlain, $qPlain) !== false
-            );
-
-            $matchCategory = true;
-            if (!empty($cat)) {
-                if ($cat === 'ban-chay' || $cat === 'best_seller' || $catPlain === 'ban chay' || $catPlain === 'ban chay nhat') {
-                    $rating = floatval($p['rating'] ?? 0);
-                    $reviews = intval($p['reviews_count'] ?? 0);
-                    $matchCategory = ($rating >= 4.9 || $reviews >= 110);
-                } elseif ($cat === 'Bánh' || $catPlain === 'banh' || $cat === 'banh-ep-hue') {
-                    $matchCategory = (mb_strpos($cNamePlain, 'banh') !== false || mb_strpos($namePlain, 'banh') !== false);
-                } elseif ($cat === 'Mè Xửng' || $catPlain === 'me xung' || $catPlain === 'keo' || $cat === 'keo-hue') {
-                    $matchCategory = (mb_strpos($cNamePlain, 'keo') !== false || mb_strpos($cNamePlain, 'me') !== false || mb_strpos($namePlain, 'me xung') !== false || mb_strpos($namePlain, 'keo') !== false);
-                } elseif ($cat === 'Trà' || $catPlain === 'tra' || $cat === 'tra-hue') {
-                    $matchCategory = (mb_strpos($cNamePlain, 'tra') !== false || mb_strpos($namePlain, 'tra') !== false || mb_strpos($namePlain, 'ca phe') !== false);
-                } elseif ($cat === 'Mắm' || $catPlain === 'mam' || $cat === 'mam-hue') {
-                    $matchCategory = (mb_strpos($cNamePlain, 'mam') !== false || mb_strpos($namePlain, 'mam') !== false);
-                } elseif ($cat === 'Ăn Vặt' || $catPlain === 'an vat' || $cat === 'an-vat') {
-                    $matchCategory = (mb_strpos($cNamePlain, 'an vat') !== false || mb_strpos($namePlain, 'kho') !== false || mb_strpos($namePlain, 'banh ep') !== false);
-                } else {
-                    $matchCategory = (mb_strpos($cNameLower, $catLower) !== false || mb_strpos($cNamePlain, $catPlain) !== false || mb_strpos($namePlain, $catPlain) !== false);
-                }
-            }
-
-            if ($matchKeyword && $matchCategory) {
-                $detailUrl = function_exists('home_url') ? home_url('/?controller=product&action=detail&id=' . $p['id']) : 'index.php?controller=product&action=detail&id=' . $p['id'];
-                $results[] = [
-                    'id'            => $p['id'],
-                    'name'          => $p['name'],
-                    'price'         => $p['price'],
-                    'image'         => $p['image'],
-                    'category'      => $p['category'] ?? 'Đặc sản Cố Đô',
-                    'stock'         => $p['stock'] ?? 100,
-                    'rating'        => $p['rating'] ?? 5.0,
-                    'reviews_count' => $p['reviews_count'] ?? 100,
-                    'link'          => $detailUrl
-                ];
+        if ($query !== '') {
+            foreach ($this->productModel->getSellableProductsWithStock() as $product) {
+                if (!$this->matchesSearch($product, $query)) continue;
+                $product['link'] = function_exists('home_url') ? home_url('/?controller=product&id=' . $product['id']) : 'index.php?controller=product&id=' . $product['id'];
+                $results[] = array_intersect_key($product, array_flip(['id', 'name', 'price', 'image', 'category', 'stock', 'link']));
             }
         }
-
-        if ($cat === 'ban-chay' || $cat === 'best_seller') {
-            usort($results, function($a, $b) {
-                return ($b['reviews_count'] ?? 0) <=> ($a['reviews_count'] ?? 0);
-            });
-        }
-
-        $topResults = array_slice($results, 0, 8);
-
-        echo json_encode([
-            'success'  => true,
-            'count'    => count($results),
-            'products' => $topResults
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-        $allProducts = $this->productModel->getAllProductsWithStock();
-        $results = [];
-
-        $qLower = mb_strtolower($query, 'UTF-8');
-        $qPlain = $this->stripAccents($query);
-        $catLower = mb_strtolower($cat, 'UTF-8');
-
-        foreach ($allProducts as $p) {
-            $nameLower = mb_strtolower($p['name'] ?? '', 'UTF-8');
-            $descLower = mb_strtolower($p['description'] ?? '', 'UTF-8');
-            $cNameLower = mb_strtolower($p['category'] ?? '', 'UTF-8');
-
-            $namePlain = $this->stripAccents($p['name'] ?? '');
-            $descPlain = $this->stripAccents($p['description'] ?? '');
-
-            $matchKeyword = empty($query) || (
-                mb_strpos($nameLower, $qLower) !== false || 
-                mb_strpos($descLower, $qLower) !== false ||
-                mb_strpos($namePlain, $qPlain) !== false ||
-                mb_strpos($descPlain, $qPlain) !== false
-            );
-            $matchCategory = empty($cat) || (mb_strpos($cNameLower, $catLower) !== false || mb_strpos($nameLower, $catLower) !== false);
-
-            if ($matchKeyword && $matchCategory) {
-                $detailUrl = function_exists('home_url') ? home_url('/?controller=product&action=detail&id=' . $p['id']) : 'index.php?controller=product&action=detail&id=' . $p['id'];
-                $results[] = [
-                    'id'       => $p['id'],
-                    'name'     => $p['name'],
-                    'price'    => $p['price'],
-                    'image'    => $p['image'],
-                    'category' => $p['category'] ?? 'Đặc sản Cố Đô',
-                    'stock'    => $p['stock'] ?? 100,
-                    'link'     => $detailUrl
-                ];
-            }
-        }
-
-        // Giới hạn 6 kết quả gợi ý nhanh
-        $topResults = array_slice($results, 0, 6);
-
-        echo json_encode([
-            'success'  => true,
-            'count'    => count($results),
-            'products' => $topResults
-        ], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['success' => true, 'count' => count($results), 'products' => array_slice($results, 0, 8)], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         exit;
     }
 
@@ -184,6 +71,12 @@ class ProductController extends BaseController {
      */
     public function submit_review() {
         header('Content-Type: application/json; charset=utf-8');
+
+        if (!is_file(__DIR__ . '/../models/ReviewModel.php')) {
+            http_response_code(503);
+            echo json_encode(['success' => false, 'message' => 'Tính năng đánh giá hiện chưa khả dụng.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Phương thức không hợp lệ']);
@@ -222,32 +115,16 @@ class ProductController extends BaseController {
      */
         public function all() {
         $allProducts = $this->productModel->getAllProductsWithStock();
-        $q           = isset($_GET['q']) ? sanitize_text_field(trim($_GET['q'])) : '';
+        $q           = sanitize_text_field($_GET['q'] ?? '');
         $catFilter   = isset($_GET['cat']) ? sanitize_text_field(trim($_GET['cat'])) : '';
         $priceFilter = isset($_GET['price']) ? sanitize_text_field(trim($_GET['price'])) : '';
         $sortBy      = isset($_GET['sort']) ? sanitize_text_field(trim($_GET['sort'])) : 'default';
 
-        $qPlain = !empty($q) ? $this->stripAccents($q) : '';
-        $qLower = !empty($q) ? mb_strtolower($q, 'UTF-8') : '';
-
-        // 1. Lọc theo từ khóa tìm kiếm (q)
-        if (!empty($q)) {
-            $allProducts = array_filter($allProducts, function($p) use ($qLower, $qPlain) {
-                $nameLower = mb_strtolower($p['name'] ?? '', 'UTF-8');
-                $descLower = mb_strtolower($p['description'] ?? '', 'UTF-8');
-                $cNameLower = mb_strtolower($p['category'] ?? '', 'UTF-8');
-                $namePlain = $this->stripAccents($p['name'] ?? '');
-                $descPlain = $this->stripAccents($p['description'] ?? '');
-                $cNamePlain = $this->stripAccents($p['category'] ?? '');
-
-                return (mb_strpos($nameLower, $qLower) !== false ||
-                        mb_strpos($descLower, $qLower) !== false ||
-                        mb_strpos($cNameLower, $qLower) !== false ||
-                        mb_strpos($namePlain, $qPlain) !== false ||
-                        mb_strpos($descPlain, $qPlain) !== false ||
-                        mb_strpos($cNamePlain, $qPlain) !== false);
-            });
-            $allProducts = array_values($allProducts);
+        // Tìm kiếm chỉ dùng sản phẩm đang bán, cùng bộ lọc với gợi ý AJAX.
+        if ($q !== '') {
+            $allProducts = array_values(array_filter($this->productModel->getSellableProductsWithStock(), function ($product) use ($q) {
+                return $this->matchesSearch($product, $q);
+            }));
         }
 
         // 2. Lọc theo danh mục (cat)
@@ -342,7 +219,20 @@ class ProductController extends BaseController {
         ]);
     }
 
+    private function matchesSearch($product, $query) {
+        $text = $this->stripAccents(html_entity_decode(strip_tags(implode(' ', [
+            $product['name'] ?? '', $product['category'] ?? '',
+            $product['short_desc'] ?? '', $product['description'] ?? ''
+        ])), ENT_QUOTES, 'UTF-8'));
+        $tokens = preg_split('/\s+/u', trim($this->stripAccents($query)), -1, PREG_SPLIT_NO_EMPTY);
+        foreach ($tokens as $token) {
+            if (mb_strpos($text, $token, 0, 'UTF-8') === false) return false;
+        }
+        return true;
+    }
+
     private function stripAccents($str) {
+        $str = mb_strtolower($str, 'UTF-8');
         $str = preg_replace('/[áàảãạăắằẳẵặâấầẩẫậ]/u', 'a', $str);
         $str = preg_replace('/[éèẻẽẹêếềểễệ]/u', 'e', $str);
         $str = preg_replace('/[íìỉĩị]/u', 'i', $str);

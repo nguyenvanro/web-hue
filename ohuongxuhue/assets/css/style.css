@@ -173,7 +173,7 @@ input, button, select, textarea {
     text-align: center;
 }
 
-.logo-text h1 {
+.logo-text h1, .logo-text .site-brand-title {
     color: #2B2B2B;
     font-size: 22px;
     font-weight: 800;
@@ -257,6 +257,7 @@ input, button, select, textarea {
 
 .search-input-wrapper {
     flex: 1;
+    min-width: 0;
     height: 100%;
     display: flex;
     align-items: center;
@@ -657,6 +658,10 @@ input, button, select, textarea {
     align-items: stretch;
 }
 
+.main-layout.main-layout-home {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 /* KHUNG DANH MỤC TRÁI - PHONG CÁCH HOÀNG GIA CỐ ĐÔ HUẾ */
 .sidebar-categories {
     background: #FFFFFF;
@@ -1011,8 +1016,129 @@ input, button, select, textarea {
     transform: scale(1.07);
 }
 
+/* Ảnh gốc giữ kích thước bố cục; slideshow chỉ phủ lên khung sẵn có. */
+:is(.hero-codo-right, .hero-wide-slideshow) .hero-slide-frame > .hero-slide-sizing {
+    visibility: hidden;
+}
+
+:is(.hero-codo-right, .hero-wide-slideshow) .hero-slide-frame > .hero-slide-image {
+    position: absolute;
+    inset: 0;
+    transition: transform 500ms ease-in-out;
+    transform: translateX(0);
+}
+
+:is(.hero-codo-right, .hero-wide-slideshow) .hero-slide-frame > .hero-slide-incoming {
+    transform: translateX(100%);
+}
+
+:is(.hero-codo-right, .hero-wide-slideshow) .hero-slide-frame.hero-slide-moving > .hero-slide-image {
+    transform: translateX(-100%);
+}
+
+:is(.hero-codo-right, .hero-wide-slideshow) .hero-slide-frame.hero-slide-moving > .hero-slide-incoming {
+    transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :is(.hero-codo-right, .hero-wide-slideshow) .hero-slide-frame > .hero-slide-image {
+        transition: none;
+    }
+}
+
 /* --- HIỆU ỨNG CUỘN CHUỘT ẨN HIỆN (SCROLL REVEAL ANIMATION) --- */
 /* Mặc định hiển thị để trang web không bao giờ bị trắng */
+/* Home banner height follows the landscape artwork on desktop and laptop. */
+@media (min-width: 769px) {
+    .main-layout.main-layout-home {
+        width: 100%;
+        max-width: 1400px;
+        box-sizing: border-box;
+        grid-template-columns: minmax(0, 1fr);
+        margin: 18px auto 28px;
+        padding: 0 16px;
+    }
+
+    .main-layout.main-layout-home > .sidebar-categories {
+        display: none;
+    }
+
+    .main-layout > .content-area {
+        height: auto;
+        min-width: 0;
+        min-height: 0;
+    }
+
+    .main-layout > .content-area > .hero-section {
+        height: auto;
+        min-height: 0;
+        max-height: none;
+        grid-template-columns: clamp(180px, 16vw, 220px) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .main-layout > .content-area .hero-codo-left,
+    .main-layout > .content-area .hero-codo-center,
+    .main-layout > .content-area .hero-codo-right {
+        height: 100%;
+        min-width: 0;
+        min-height: 0;
+    }
+
+.main-layout > .content-area .hero-codo-left {
+        padding: 12px;
+    }
+
+    .main-layout > .content-area .hero-codo-left h2 {
+        font-size: 23px;
+        margin-bottom: 8px;
+    }
+
+    .main-layout > .content-area .hero-codo-left p {
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .main-layout > .content-area .hero-codo-center .codo-main-img {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .main-layout > .content-area .hero-codo-right {
+        gap: 8px;
+    }
+
+    .main-layout > .content-area .hero-codo-right .codo-sub-box {
+        flex: 1 1 0;
+        min-height: 0;
+    }
+
+    .main-layout > .content-area .hero-codo-right img {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .main-layout > .content-area .codo-center-badge {
+        padding: 8px 10px;
+    }
+
+    .main-layout > .content-area .codo-center-badge h3 {
+        font-size: 13px;
+    }
+
+    .main-layout > .content-area .codo-center-badge p {
+        font-size: 11px;
+    }
+}
+
 .reveal-on-scroll {
     opacity: 1;
     transform: translateY(0);
@@ -2118,7 +2244,7 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
         height: 44px;
         padding: 2px;
     }
-    .logo-text h1 {
+    .logo-text h1, .logo-text .site-brand-title {
         font-size: 16px;
         line-height: 1.2;
     }
@@ -2282,7 +2408,7 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
         border-radius: 12px;
     }
 
-    /* Tiêu đề Top Đặc Sản */
+/* Tiêu đề Top Đặc Sản */
     .section-title {
         font-size: 22px;
         padding-bottom: 10px;
@@ -4628,6 +4754,14 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     box-shadow: 0 10px 30px rgba(74, 14, 23, 0.25);
 }
 
+.blog-hero-banner[data-blog-category="am-thuc"] {
+    background: linear-gradient(135deg, #4A0E17 0%, #7A1E2E 60%, #4A0E17 100%);
+}
+
+.blog-hero-banner[data-blog-category="du-lich"] {
+    background: linear-gradient(135deg, #4A0E17 0%, #7A1E2E 60%, #4A0E17 100%);
+}
+
 .blog-hero-content {
     max-width: 900px;
     margin: 0 auto;
@@ -4994,6 +5128,17 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     line-height: 1.8;
 }
 
+.blog-modal-full-content h2 { font-size: 23px; line-height: 1.4; margin: 30px 0 12px; color: #4A0E17; }
+.blog-modal-full-content h3 { font-size: 18px; line-height: 1.5; margin: 22px 0 10px; }
+.blog-modal-full-content p, .blog-modal-full-content ul { margin-bottom: 16px; }
+.blog-modal-full-content ul { padding-left: 24px; }
+.blog-modal-full-content a { color: #7A1E2E; text-decoration: underline; }
+.featured-title a, .blog-card-title a { color: inherit; text-decoration: none; }
+.featured-title a:hover, .blog-card-title a:hover { text-decoration: underline; }
+.blog-article-detail { max-width: 900px; margin: 0 auto; padding: 35px; background: #fff; border-radius: 20px; box-shadow: 0 8px 24px rgba(74, 14, 23, .08); }
+.blog-article-cover { display: block; width: 100%; max-height: 450px; object-fit: cover; border-radius: 12px; margin: 24px 0; }
+@media (max-width: 600px) { .blog-article-detail { padding: 22px 16px; } }
+
 .blog-modal-footer {
     margin-top: 30px;
     text-align: right;
@@ -5106,7 +5251,8 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
 
 .store-img-wrapper {
     position: relative;
-    height: 220px;
+    aspect-ratio: 8 / 5;
+    overflow: hidden;
 }
 
 .store-img-wrapper img {
@@ -5115,6 +5261,17 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     object-fit: cover;
 }
 
+.store-image-caption {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    background: rgba(38, 22, 16, .65);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.4;
+}
 .store-badge {
     position: absolute;
     top: 15px;
@@ -5367,7 +5524,7 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
 
 .contact-info-cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 25px;
     margin-bottom: 40px;
 }
@@ -6850,9 +7007,22 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     overflow: hidden;
     z-index: 9999;
 }
+/* Keep the search dropdown above navigation, including ambient.css overrides. */
+body .main-header { z-index: 110; overflow: visible; }
+.main-header .header-container, .main-header .search-bar { overflow: visible; }
 .live-search-item:hover {
     background: #fdfaf3 !important;
 }
+
+.search-bar { margin: 0; }
+.live-search-dropdown { max-height: 420px; overflow-y: auto; }
+.live-search-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #4A0E17; text-decoration: none; border-bottom: 1px solid #efeae2; }
+.live-search-item img { width: 52px; height: 52px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.live-search-item strong, .live-search-item small { display: block; }
+.live-search-item strong { font-size: 14px; }
+.live-search-item small { margin-top: 5px; color: #7A1E2E; font-size: 13px; }
+.live-search-message, .live-search-all { display: block; margin: 0; padding: 14px 16px; font-size: 14px; color: #4A0E17; }
+.live-search-all { font-weight: 700; text-decoration: none; background: #fdfaf3; }
 
 /* ========================================================
    3. ĐÁNH GIÁ PHẢN HỒI & HÌNH ẢNH THỰC TẾ (REVIEWS UGC)
@@ -7227,14 +7397,60 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
 /* ========================================================
    DROPDOWN MENU ĐẶC SẢN HUẾ HOÀNG GIA (DANH MỤC CON ĐA TẦNG)
    ======================================================== */
-.nav-container > li.has-dropdown {
+.main-nav li.nav-item-dacsan {
     position: relative !important;
 }
 
-.nav-container > li.has-dropdown > a {
+.main-nav li.nav-item-dacsan > a {
     display: inline-flex !important;
     align-items: center !important;
     gap: 5px !important;
+}
+
+.main-nav .nav-item-blog {
+    position: relative;
+}
+
+.main-nav .nav-blog-submenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 210px;
+    list-style: none;
+    padding: 6px 0;
+    margin: 0;
+    background: #fff;
+    border: 1px solid #efeae2;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 10px 25px #0003;
+    z-index: 99999;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.main-nav .nav-item-blog:hover > .nav-blog-submenu,
+.main-nav .nav-item-blog:focus-within > .nav-blog-submenu {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.main-nav .nav-blog-submenu > li {
+    display: block;
+}
+
+.main-nav .nav-blog-submenu > li > a {
+    display: block;
+    padding: 12px 16px;
+    color: #7a1e2e;
+    text-shadow: none;
+    border-radius: 0;
+}
+
+.main-nav .nav-blog-submenu > li > a:hover {
+    color: #7a1e2e;
+    background: #fbf4ea;
 }
 
 .nav-dropdown-caret {
@@ -7244,7 +7460,7 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     vertical-align: middle;
 }
 
-.nav-container > li.has-dropdown:hover > a .nav-dropdown-caret {
+.main-nav li.nav-item-dacsan:hover > a .nav-dropdown-caret {
     transform: rotate(180deg);
     color: #D4AF37;
 }
@@ -7276,8 +7492,8 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     height: 16px;
 }
 
-.nav-container > li.has-dropdown:hover > .nav-dropdown-mega,
-.nav-container > li.has-dropdown:focus-within > .nav-dropdown-mega {
+.main-nav li.nav-item-dacsan:hover > .nav-dropdown-mega,
+.main-nav li.nav-item-dacsan:focus-within > .nav-dropdown-mega {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -7289,7 +7505,7 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     color: #ffffff;
     padding: 12px 18px;
     border-bottom: 3px solid #D4AF37;
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: center;
     gap: 8px;
@@ -7495,3 +7711,37 @@ html.js-reveal-ready .reveal-on-scroll.is-revealed {
     color: #D4AF37 !important;
 }
 
+
+/* One landscape slideshow beside the unchanged introduction column. */
+.hero-wide-slideshow {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 2;
+    align-self: start;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #f5f0e8;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .07);
+}
+.hero-wide-frame {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+.hero-wide-frame > .hero-slide-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+@media (max-width: 768px) {
+    .hero-wide-slideshow {
+        height: auto;
+        aspect-ratio: 12 / 5;
+        border-radius: 14px;
+    }
+}

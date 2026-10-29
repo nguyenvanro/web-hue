@@ -31,22 +31,14 @@ $successMessage = $successMessage ?? '';
             </div>
         <?php endif; ?>
 
-        <!-- 3 THẺ THÔNG TIN LIÊN LẠC NHANH -->
+        <!-- THÔNG TIN LIÊN LẠC NHANH -->
         <div class="contact-info-cards-grid">
             <div class="info-card">
                 <div class="info-card-icon">📞</div>
-                <h3>Hotline & Zalo Tư Vấn</h3>
+                <h3>Hotline Tư Vấn</h3>
                 <p class="info-main">0234 388 9999</p>
                 <p class="info-sub">0905 123 456 (Hỗ trợ 24/7)</p>
                 <span class="info-badge">Tư vấn miễn phí</span>
-            </div>
-
-            <div class="info-card">
-                <div class="info-card-icon">✉️</div>
-                <h3>Hòm Thư Điện Tử</h3>
-                <p class="info-main">lienhe@ohuongxuhue.vn</p>
-                <p class="info-sub">kinhdoanh@ohuongxuhue.vn</p>
-                <span class="info-badge">Phản hồi trong 30 phút</span>
             </div>
 
             <div class="info-card">

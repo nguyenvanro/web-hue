@@ -1,62 +1,122 @@
 {
     "1": {
-        "stock_quantity": 88,
-        "sold_quantity": 20,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 47,
+        "sold_quantity": 15,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "2": {
-        "stock_quantity": 50,
-        "sold_quantity": 12,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 54,
+        "sold_quantity": 20,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "3": {
-        "stock_quantity": 40,
+        "stock_quantity": 61,
         "sold_quantity": 25,
-        "updated_at": "2026-09-10 13:58:29"
+        "updated_at": "2026-10-03 11:28:43"
     },
     "4": {
-        "stock_quantity": 35,
-        "sold_quantity": 15,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 68,
+        "sold_quantity": 30,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "5": {
-        "stock_quantity": 55,
+        "stock_quantity": 45,
         "sold_quantity": 10,
-        "updated_at": "2026-09-10 13:58:29"
+        "updated_at": "2026-10-03 11:28:43"
     },
     "6": {
-        "stock_quantity": 45,
-        "sold_quantity": 8,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 52,
+        "sold_quantity": 15,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "7": {
-        "stock_quantity": 60,
-        "sold_quantity": 14,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 59,
+        "sold_quantity": 20,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "8": {
-        "stock_quantity": 40,
-        "sold_quantity": 6,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 66,
+        "sold_quantity": 25,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "9": {
-        "stock_quantity": 50,
-        "sold_quantity": 9,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 43,
+        "sold_quantity": 30,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "10": {
-        "stock_quantity": 30,
-        "sold_quantity": 11,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 50,
+        "sold_quantity": 10,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "11": {
-        "stock_quantity": 45,
-        "sold_quantity": 7,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 57,
+        "sold_quantity": 15,
+        "updated_at": "2026-10-03 11:28:43"
     },
     "12": {
-        "stock_quantity": 50,
-        "sold_quantity": 13,
-        "updated_at": "2026-09-10 13:58:29"
+        "stock_quantity": 64,
+        "sold_quantity": 20,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "13": {
+        "stock_quantity": 41,
+        "sold_quantity": 25,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "14": {
+        "stock_quantity": 48,
+        "sold_quantity": 30,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "15": {
+        "stock_quantity": 55,
+        "sold_quantity": 10,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "16": {
+        "stock_quantity": 62,
+        "sold_quantity": 15,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "17": {
+        "stock_quantity": 69,
+        "sold_quantity": 20,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "18": {
+        "stock_quantity": 46,
+        "sold_quantity": 25,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "19": {
+        "stock_quantity": 53,
+        "sold_quantity": 30,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "20": {
+        "stock_quantity": 60,
+        "sold_quantity": 10,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "21": {
+        "stock_quantity": 67,
+        "sold_quantity": 15,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "22": {
+        "stock_quantity": 44,
+        "sold_quantity": 20,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "23": {
+        "stock_quantity": 51,
+        "sold_quantity": 25,
+        "updated_at": "2026-10-03 11:28:43"
+    },
+    "24": {
+        "stock_quantity": 58,
+        "sold_quantity": 30,
+        "updated_at": "2026-10-03 11:28:43"
     }
 }

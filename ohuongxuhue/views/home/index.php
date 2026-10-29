@@ -8,6 +8,20 @@ $detailUrl       = function_exists('home_url') ? home_url('/?controller=product&
 $checkoutUrl     = function_exists('wc_get_checkout_url') ? wc_get_checkout_url() . '?sync_cart=1' : (function_exists('home_url') ? home_url('/thanh-toan/?sync_cart=1') : 'thanh-toan/?sync_cart=1');
 $cartUrl         = function_exists('home_url') ? home_url('/?controller=cart') : 'index.php?controller=cart';
 $theme_uri       = function_exists('get_template_directory_uri') ? get_template_directory_uri() : '.';
+require __DIR__ . '/consultation.php';
+// Thứ tự slideshow được chỉ định, không phụ thuộc thứ tự tên file.
+$heroImageNames = ['Hat_Sen_Tuoi_Hue.png', 'Tre_Hue.png', 'Tra_Sen_Hue.png', 'Mam_Hue.png'];
+$heroImageUrl = $theme_uri . '/assets/images/banner';
+$heroImageDir = dirname(__DIR__, 2) . '/assets/images/banner';
+if (!function_exists('home_url') && is_dir(dirname(__DIR__, 3) . '/images/banner')) {
+    $heroImageUrl = '../images/banner';
+    $heroImageDir = dirname(__DIR__, 3) . '/images/banner';
+}
+$heroImages = array_map(function ($filename) use ($heroImageUrl, $heroImageDir) {
+    $imagePath = $heroImageDir . '/' . $filename;
+    $version = is_file($imagePath) ? '?v=' . filemtime($imagePath) : '';
+    return $heroImageUrl . '/' . rawurlencode($filename) . $version;
+}, $heroImageNames);
 ?>
 
 <style>
@@ -101,135 +115,12 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
 }
 
 /* Toast thông báo thêm giỏ hàng */
-.cart-toast-notification {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    background: #ffffff;
-    border: 2px solid #d4af37;
-    border-radius: 12px;
-    padding: 16px 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transform: translateY(120%);
-    opacity: 0;
-    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.cart-toast-notification.show {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.cart-toast-icon {
-    font-size: 28px;
-}
-
-.cart-toast-content {
-    font-size: 13px;
-    color: #333;
-}
-
-.cart-toast-title {
-    font-weight: 700;
-    color: #8b1d24;
-    font-size: 14px;
-    margin-bottom: 2px;
-}
-
-.cart-toast-btns {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.cart-toast-btn-view {
-    background: #fdf6e7;
-    color: #8b5a2b;
-    border: 1px solid #d4af37;
-    padding: 5px 12px;
-    border-radius: 14px;
-    font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.cart-toast-btn-checkout {
-    background: #8b1d24;
-    color: #fff !important;
-    padding: 5px 12px;
-    border-radius: 14px;
-    font-size: 11px;
-    font-weight: 700;
-    text-decoration: none;
-}
 </style>
 
-    <!-- BỐ CỤC 2 CỘT (CHỈ DÀNH CHO DANH MỤC VÀ BANNER) -->
-    <div class="main-layout">
+    <!-- BANNER TRANG CHỦ; DANH MỤC NẰM TRONG MENU ĐẶC SẢN HUẾ -->
+    <div class="main-layout main-layout-home">
         
-        <!-- Cột Trái: Danh Mục Đặc Sản Cố Đô Hoàng Gia -->
-        <aside class="sidebar-categories">
-            <div class="sidebar-title">
-                <div class="sidebar-title-main">
-                    <span>DANH MỤC ĐẶC SẢN</span>
-                </div>
-                <span class="sidebar-title-badge">CỐ ĐÔ</span>
-            </div>
-            <ul class="sidebar-list">
-                <?php foreach ($categories as $index => $cat): 
-                    $catName = $cat['name'];
-                    $catBadge = $cat['badge'] ?? '';
-                    $catBadgeCls = $cat['badge_cls'] ?? '';
-                    $hasChildren = !empty($cat['children']);
-                ?>
-                    <li class="sidebar-item has-accordion">
-                        <div class="accordion-header" onclick="toggleSidebarCategory(this)" role="button" tabindex="0" title="Nhấn để xem các loại <?php echo htmlspecialchars($catName); ?>">
-                            <span class="sidebar-item-left">
-                                <span class="sidebar-item-name"><?php echo htmlspecialchars($catName); ?></span>
-                            </span>
-                            <span class="sidebar-item-right">
-                                <?php if (!empty($catBadge)): ?>
-                                    <span class="sidebar-item-badge <?php echo htmlspecialchars($catBadgeCls); ?>"><?php echo htmlspecialchars($catBadge); ?></span>
-                                <?php endif; ?>
-                                <span class="sidebar-item-arrow">›</span>
-                            </span>
-                        </div>
-                        <?php if ($hasChildren): ?>
-                            <ul class="accordion-sub-list">
-                                <?php foreach ($cat['children'] as $sub): ?>
-                                    <li>
-                                        <a href="<?php echo htmlspecialchars($sub['link']); ?>">
-                                            <?php echo htmlspecialchars($sub['name']); ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                                <li class="sub-view-all">
-                                    <a href="<?php echo htmlspecialchars($cat['link']); ?>">
-                                        Xem tất cả danh mục này &rarr;
-                                    </a>
-                                </li>
-                            </ul>
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-
-            <!-- Chân bảo chứng chất lượng ẩm thực Cố Đô -->
-            <div class="sidebar-trust-box">
-                <div class="trust-item">
-                    <span>100% Nguyên liệu truyền thống Cố Đô</span>
-                </div>
-                <div class="trust-item">
-                    <span>Đóng thùng xốp đá khô giao hỏa tốc</span>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Cột Phải: Chỉ chứa Banner -->
+        <!-- Banner -->
         <div class="content-area">
             <section class="hero-section">
                 <!-- 1. Cột Trái: Chữ Hương Vị Cố Đô -->
@@ -238,30 +129,19 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                     <p>Hương vị tinh túy cố đô nơi rạng danh nét ẩm thực Hương Xứ Huế</p>
                 </div>
                 
-                <!-- 2. Cột Giữa: Ảnh Mâm Cỗ + Badge Đặc Sản Nổi Bật -->
-                <div class="hero-codo-center">
-                    <img src="<?php echo esc_url($theme_uri . '/assets/images/codo-main.jpg'); ?>" alt="Đặc sản Huế mâm cỗ truyền thống" class="codo-main-img">
-                    <div class="codo-center-badge">
-                        <h3>ĐẶC SẢN NỔI BẬT</h3>
-                        <p>Bao năm theo mẹ gìn giữ hương vị Cố Đô, từng món ăn gắn kết hồn quê xứ Huế.</p>
-                    </div>
-                </div>
-
-                <!-- 3. Cột Phải: 2 Ảnh Xếp Chồng -->
-                <div class="hero-codo-right">
-                    <div class="codo-sub-box">
-                        <img src="<?php echo esc_url($theme_uri . '/assets/images/codo-salad.jpg'); ?>" alt="Mẹt bánh ít ram và bánh bèo Cố Đô Huế">
-                    </div>
-                    <div class="codo-sub-box">
-                        <img src="<?php echo esc_url($theme_uri . '/assets/images/codo-banhep.jpg'); ?>" alt="Bánh canh Nam Phổ truyền thống xứ Huế">
+                <!-- Cột ảnh rộng: gộp cột giữa và cột phải thành một slideshow. -->
+                <div class="hero-wide-slideshow" data-hero-slideshow data-hero-images="<?php echo esc_attr(json_encode($heroImages, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); ?>">
+                    <div class="hero-wide-frame hero-slide-frame">
+                        <img class="hero-slide-image" src="<?php echo esc_url($heroImages[0]); ?>" alt="Banner đặc sản O Hương Xứ Huế" fetchpriority="high" decoding="async">
                     </div>
                 </div>
             </section>
         </div> 
-        <!-- Đóng Cột Phải -->
+        <!-- Đóng Banner -->
 
     </div> 
-    <!-- Đóng Bố Cục Chính 2 Cột -->
+    <!-- Đóng Bố Cục Banner -->
+    <script src="<?php echo esc_url($theme_uri); ?>/assets/js/hero-slideshow.js?v=<?php echo filemtime(__DIR__ . '/../../assets/js/hero-slideshow.js'); ?>" defer></script>
 
 
     <!-- ========================================== -->
@@ -293,7 +173,7 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                             
                             <!-- 2 Nút: Thêm vào giỏ hàng & Mua ngay -->
                             <div class="card-btn-group">
-                                <button type="button" class="btn-add-cart-ajax" onclick="addCartAjax(<?php echo $item['id']; ?>, '<?php echo addslashes($item['name']); ?>')" title="Thêm vào giỏ hàng">
+                                <button type="button" class="btn-add-cart-ajax" onclick="addCartAjax(<?php echo (int) $item['id']; ?>, <?php echo htmlspecialchars(json_encode($item['name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP), ENT_QUOTES, 'UTF-8'); ?>)" title="Thêm vào giỏ hàng">
                                     🛒 Thêm vào giỏ
                                 </button>
                                 <a href="?controller=cart&action=add&id=<?php echo $item['id']; ?>&redirect=<?php echo urlencode($checkoutUrl); ?>" class="btn-buy-now" title="Mua ngay đặc sản này">
@@ -324,10 +204,10 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                     </div>
                 </div>
                 <div class="showcase-pills">
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=banh-ep-hue')); ?>" class="showcase-pill-link active">Tất Cả Bánh Ép</a>
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=banh-ep-hue')); ?>" class="showcase-pill-link">Bánh Ép Khô</a>
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=nem-chua-hue')); ?>" class="showcase-pill-link">Nem Chua Huế</a>
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=tre-hue')); ?>" class="showcase-pill-link">Tré Bò Cố Đô</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=banh-ep-hue') : 'index.php?controller=dac-san&cat=banh-ep-hue')); ?>" class="showcase-pill-link active">Tất Cả Bánh Ép</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=banh-ep-hue') : 'index.php?controller=dac-san&cat=banh-ep-hue')); ?>" class="showcase-pill-link">Bánh Ép Khô</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=nem-chua-hue') : 'index.php?controller=dac-san&cat=nem-chua-hue')); ?>" class="showcase-pill-link">Nem Chua Huế</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=tre-hue') : 'index.php?controller=dac-san&cat=tre-hue')); ?>" class="showcase-pill-link">Tré Bò Cố Đô</a>
                 </div>
             </div>
             
@@ -343,7 +223,7 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                             <h4>Bánh Ép &amp; Nem Tré Cố Đô</h4>
                             <p>Bánh ép Thuận An giòn rụm đậm vị, nem chua chùm lá ổi lên men truyền thống, tré bò cay nồng thơm ngát mùi riềng tiêu.</p>
                         </div>
-                        <a href="<?php echo esc_url(home_url('/dac-san/?cat=banh-ep-hue')); ?>" class="showcase-cta-btn">Khám Phá Menu &rarr;</a>
+                        <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=banh-ep-hue') : 'index.php?controller=dac-san&cat=banh-ep-hue')); ?>" class="showcase-cta-btn">Khám Phá Menu &rarr;</a>
                     </div>
                 </div>
 
@@ -366,7 +246,7 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                                 <div class="product-price"><?php echo htmlspecialchars($item['price']); ?></div>
                                 
                                 <div class="card-btn-group">
-                                    <button type="button" class="btn-add-cart-ajax" onclick="addCartAjax(<?php echo $item['id']; ?>, '<?php echo addslashes($item['name']); ?>')" title="Thêm vào giỏ hàng">
+                                    <button type="button" class="btn-add-cart-ajax" onclick="addCartAjax(<?php echo (int) $item['id']; ?>, <?php echo htmlspecialchars(json_encode($item['name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP), ENT_QUOTES, 'UTF-8'); ?>)" title="Thêm vào giỏ hàng">
                                         🛒 Thêm vào giỏ
                                     </button>
                                     <a href="?controller=cart&action=add&id=<?php echo $item['id']; ?>&redirect=<?php echo urlencode($checkoutUrl); ?>" class="btn-buy-now" title="Mua ngay đặc sản này">
@@ -391,10 +271,10 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                     </div>
                 </div>
                 <div class="showcase-pills">
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=keo-hue')); ?>" class="showcase-pill-link active">Tất Cả Kẹo Huế</a>
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=tra-hue')); ?>" class="showcase-pill-link">Trà Cung Đình</a>
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=hat-sen-hue')); ?>" class="showcase-pill-link">Hạt Sen Huế</a>
-                    <a href="<?php echo esc_url(home_url('/dac-san/?cat=mam-hue')); ?>" class="showcase-pill-link">Mắm Cố Đô</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=keo-hue') : 'index.php?controller=dac-san&cat=keo-hue')); ?>" class="showcase-pill-link active">Tất Cả Kẹo Huế</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=tra-hue') : 'index.php?controller=dac-san&cat=tra-hue')); ?>" class="showcase-pill-link">Trà Cung Đình</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=hat-sen-hue') : 'index.php?controller=dac-san&cat=hat-sen-hue')); ?>" class="showcase-pill-link">Hạt Sen Huế</a>
+                    <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=mam-hue') : 'index.php?controller=dac-san&cat=mam-hue')); ?>" class="showcase-pill-link">Mắm Cố Đô</a>
                 </div>
             </div>
             
@@ -410,7 +290,7 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                             <h4>Mè Xửng &amp; Trà Huế</h4>
                             <p>Thưởng thức miếng mè xửng bùi béo ngọt thanh, nhâm nhi tách trà cung đình thơm ngát hoa cúc hoa sen.</p>
                         </div>
-                        <a href="<?php echo esc_url(home_url('/dac-san/?cat=me-xung')); ?>" class="showcase-cta-btn">Khám Phá Menu &rarr;</a>
+                        <a href="<?php echo esc_url((function_exists('home_url') ? home_url('/dac-san/?cat=me-xung') : 'index.php?controller=dac-san&cat=me-xung')); ?>" class="showcase-cta-btn">Khám Phá Menu &rarr;</a>
                     </div>
                 </div>
 
@@ -433,7 +313,7 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
                                 <div class="product-price"><?php echo htmlspecialchars($item['price']); ?></div>
                                 
                                 <div class="card-btn-group">
-                                    <button type="button" class="btn-add-cart-ajax" onclick="addCartAjax(<?php echo $item['id']; ?>, '<?php echo addslashes($item['name']); ?>')" title="Thêm vào giỏ hàng">
+                                    <button type="button" class="btn-add-cart-ajax" onclick="addCartAjax(<?php echo (int) $item['id']; ?>, <?php echo htmlspecialchars(json_encode($item['name'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP), ENT_QUOTES, 'UTF-8'); ?>)" title="Thêm vào giỏ hàng">
                                         🛒 Thêm vào giỏ
                                     </button>
                                     <a href="?controller=cart&action=add&id=<?php echo $item['id']; ?>&redirect=<?php echo urlencode($checkoutUrl); ?>" class="btn-buy-now" title="Mua ngay đặc sản này">
@@ -451,19 +331,8 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
     <!-- Đóng khu vực khối danh mục dưới -->
 
     <!-- Toast thông báo thêm giỏ hàng thành công -->
-    <div id="cartToast" class="cart-toast-notification">
-        <div class="cart-toast-icon">🛍️</div>
-        <div class="cart-toast-content">
-            <div class="cart-toast-title">Đã thêm vào giỏ hàng!</div>
-            <div id="cartToastMsg">Sản phẩm đặc sản đã được thêm vào giỏ.</div>
-            <div class="cart-toast-btns">
-                <a href="<?php echo esc_url($cartUrl); ?>" class="cart-toast-btn-view">Xem Giỏ Hàng</a>
-                <a href="<?php echo esc_url($checkoutUrl); ?>" class="cart-toast-btn-checkout">Thanh Toán Ngay &rarr;</a>
-            </div>
-        </div>
-    </div>
+    <?php require __DIR__ . '/../layouts/cart-toast.php'; ?>
 
-    <!-- Script xử lý thêm vào giỏ bằng Ajax, Toast và Accordion Danh Mục -->
     <script>
     function toggleSidebarCategory(headerEl) {
         const parent = headerEl.closest('.sidebar-item.has-accordion');
@@ -481,39 +350,4 @@ $theme_uri       = function_exists('get_template_directory_uri') ? get_template_
         }
     }
 
-    let toastTimeout = null;
-
-    function addCartAjax(productId, productName) {
-        fetch('index.php?controller=cart&action=add&id=' + productId + '&ajax=1')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Cập nhật số lượng giỏ hàng trên header
-                    const badges = document.querySelectorAll('.cart-count-badge, #headerCartCount');
-                    badges.forEach(b => {
-                        b.innerText = data.cart_count;
-                        b.style.display = 'inline-block';
-                    });
-
-                    // Hiển thị Toast
-                    const toast = document.getElementById('cartToast');
-                    const toastMsg = document.getElementById('cartToastMsg');
-                    if (toast && toastMsg) {
-                        toastMsg.innerText = '"' + productName + '" đã được thêm vào giỏ hàng.';
-                        toast.classList.add('show');
-
-                        if (toastTimeout) clearTimeout(toastTimeout);
-                        toastTimeout = setTimeout(() => {
-                            toast.classList.remove('show');
-                        }, 4000);
-                    }
-                } else {
-                    alert(data.message || 'Không thể thêm sản phẩm vào giỏ.');
-                }
-            })
-            .catch(err => {
-                // Fallback nếu có lỗi mạng
-                window.location.href = 'index.php?controller=cart&action=add&id=' + productId;
-            });
-    }
     </script>

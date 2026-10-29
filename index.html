@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <link rel="icon" type="image/x-icon" href="./images/logo.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <title>O Hương Xứ Huế - Vị Ngon Cố Đô</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20261018-fast">
     <link rel="stylesheet" href="hue-ambient.css?v=3.0.0">
     <link rel="stylesheet" href="hue-food-map.css">
+<script src="header-search.js?v=20261006-1" defer></script>
+<link rel="stylesheet" href="responsive.css?v=20261029-2">
+<script src="responsive.js?v=20261029-2" defer></script>
 </head>
 <body>
 
@@ -32,19 +36,12 @@
                 </div>
             </a>
 
-                        <div class="search-bar">
-                <select id="headerCategorySelect">
-                    <option value="">Tất cả đặc sản</option>
-                    <option value="ban-chay">🔥 Bán chạy nhất</option>
-                    <option value="Bánh">Bánh Huế</option>
-                    <option value="Mè Xửng">Mè Xửng &amp; Kẹo</option>
-                    <option value="Trà">Trà Cung Đình</option>
-                    <option value="Mắm">Mắm Cố Đô</option>
-                    <option value="Ăn Vặt">Đồ Ăn Vặt</option>
-                </select>
-                <input type="search" id="headerSearchInput" placeholder="Tìm kiếm đặc sản Huế thơm ngon...">
-                <button type="button" id="headerSearchBtn">🔍 Tìm kiếm</button>
-            </div>
+                        <form class="search-bar" role="search" method="get" action="ohuongxuhue/index.php" data-search-url="ohuongxuhue/index.php?controller=product&amp;action=ajax_search">
+                <input type="hidden" name="controller" value="dac-san">
+                <div class="search-input-wrapper"><input type="search" name="q" id="headerSearchInput" aria-label="Tìm kiếm đặc sản đang bán" placeholder="Tìm kiếm đặc sản Huế thơm ngon..." autocomplete="off"></div>
+                <button type="submit" id="headerSearchBtn">🔍 Tìm kiếm</button>
+                <div class="live-search-dropdown" id="liveSearchResults" aria-label="Gợi ý đặc sản" style="display: none;"></div>
+            </form>
 
             <div class="header-actions">
                 <a href="gio-hang.html" class="header-cart-action" title="Giỏ Hàng" style="text-decoration:none; position:relative; display:inline-flex; align-items:center;">
@@ -197,7 +194,7 @@
                     </ul>
                 </div>
             </li>
-            <li><a href="blog.html">Blog</a></li>
+            <li class="nav-item-blog"><a href="blog.html">BLOG <span class="nav-dropdown-caret">▾</span></a><ul class="nav-blog-submenu" aria-label="Chuyên mục Blog"><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=am-thuc">GÓC ẨM THỰC</a></li><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=du-lich">GÓC DU LỊCH</a></li></ul></li>
             <li><a href="lien-he.html">Liên hệ</a></li>
             <li><a href="cua-hang.html">Cửa hàng</a></li>
             <li><a href="ban-do.html" style="color: #ffd700; font-weight: 700;">🗺️ Bản Đồ Cố Đô</a></li>
@@ -205,7 +202,7 @@
     </nav>
 
     <!-- BỐ CỤC 2 CỘT (DANH MỤC ĐA TẦNG VÀ BANNER HERO) -->
-    <div class="main-layout">
+    <div class="main-layout main-layout-home">
         <!-- Cột Trái: Danh Mục Đặc Sản Đa Tầng (Cha & Con) -->
         <aside class="sidebar-categories">
             <div class="sidebar-title">
@@ -342,22 +339,10 @@
                     <p>Hương vị tinh túy cố đô nơi rạng danh nét ẩm thực Hương Xứ Huế</p>
                 </div>
                 
-                <!-- 2. Cột Giữa: Ảnh Mâm Cỗ + Badge Đặc Sản Nổi Bật -->
-                <div class="hero-codo-center">
-                    <img src="images/codo-main.jpg" alt="Đặc sản Huế mâm cỗ truyền thống" class="codo-main-img">
-                    <div class="codo-center-badge">
-                        <h3>ĐẶC SẢN NỔI BẬT</h3>
-                        <p>Bao năm theo mẹ gìn giữ hương vị Cố Đô, từng món ăn gắn kết hồn quê xứ Huế.</p>
-                    </div>
-                </div>
-
-                <!-- 3. Cột Phải: 2 Ảnh Xếp Chồng Mới Của Web -->
-                <div class="hero-codo-right">
-                    <div class="codo-sub-box">
-                        <img src="images/codo-salad.jpg" alt="Mẹt bánh ít ram và bánh bèo Cố Đô Huế">
-                    </div>
-                    <div class="codo-sub-box">
-                        <img src="images/codo-banhep.jpg" alt="Bánh canh Nam Phổ truyền thống xứ Huế">
+                <!-- Cột ảnh rộng: gộp cột giữa và cột phải thành một slideshow. -->
+                <div class="hero-wide-slideshow" data-hero-slideshow data-hero-images="[&quot;images/banner/Hat_Sen_Tuoi_Hue.png?v=1792292651&quot;,&quot;images/banner/Tre_Hue.png?v=1792292651&quot;,&quot;images/banner/Tra_Sen_Hue.png?v=1792292651&quot;,&quot;images/banner/Mam_Hue.png?v=1792292651&quot;]">
+                    <div class="hero-wide-frame hero-slide-frame">
+                        <img class="hero-slide-image" src="images/banner/Hat_Sen_Tuoi_Hue.png?v=1792292651" alt="Banner đặc sản O Hương Xứ Huế" fetchpriority="high" decoding="async">
                     </div>
                 </div>
             </section>
@@ -652,7 +637,7 @@
         </div>
     </div>
 
-    <!-- FOOTER CHÍNH THỨC VỚI ĐỦ EMAIL, TIKTOK, FB, IG, ZALO -->
+    <!-- FOOTER CHÍNH THỨC -->
     <footer class="main-footer" style="background: #4A0E17; color: #fff; padding: 50px 24px 20px 24px; margin-top: 60px;">
         <div style="max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 30px;">
             <div>
@@ -660,7 +645,7 @@
                 <p style="color: #e0d0c0; font-size: 13.5px; line-height: 1.6; margin-bottom: 15px;">
                     Gìn giữ và lan tỏa tinh hoa ẩm thực Cố Đô Huế. Hương vị tinh túy cung đình, phục vụ tận tâm từ trái tim người xứ Huế.
                 </p>
-                <p style="color: #e0d0c0; font-size: 13px;">📍 Địa chỉ: 22 Lê Lợi, TP. Huế</p>
+                <p style="color: #e0d0c0; font-size: 13px;">📍 Địa chỉ: 101 Trường Sa, Phường Ngũ Hành Sơn, TP. Đà Nẵng</p>
                 <p style="color: #e0d0c0; font-size: 13px;">📞 Hotline: 0342.684.980</p>
             </div>
 
@@ -672,53 +657,6 @@
                     <li><a href="dac-san.html?cat=keo-hue" style="color: #e0d0c0; text-decoration: none;">🍬 Mè Xửng &amp; Kẹo Quà</a></li>
                     <li><a href="dac-san.html?cat=tra-hue" style="color: #e0d0c0; text-decoration: none;">🍵 Trà Cung Đình &amp; Cà Phê</a></li>
                 </ul>
-            </div>
-
-            <div>
-                <h4 style="color: #D4AF37; font-size: 16px; margin-bottom: 15px; text-transform: uppercase;">Kết Nối &amp; Mạng Xã Hội</h4>
-                <p style="color: #e0d0c0; font-size: 13px; margin-bottom: 15px;">Theo dõi chúng tôi trên các kênh truyền thông chính thức:</p>
-                <div class="footer-channel-circles">
-                    <!-- 1. Facebook Fanpage -->
-                    <a href="https://www.facebook.com/share/17ZYCnJpnx/" target="_blank" rel="noopener noreferrer" class="footer-circle-btn btn-fb" aria-label="Facebook Fanpage" title="Fanpage Facebook: O Hương Xứ Huế">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                        </svg>
-                        <span class="circle-tooltip">Fanpage Facebook</span>
-                    </a>
-
-                    <!-- 2. Zalo Chat & Tư Vấn -->
-                    <a href="https://zalo.me/0342684980" target="_blank" rel="noopener noreferrer" class="footer-circle-btn btn-zalo" aria-label="Zalo" title="Zalo Tư Vấn: 0342.684.980">
-                        <span style="font-weight:900; font-size:12px; font-family:'Segoe UI', Tahoma, sans-serif; letter-spacing:-0.4px;">Zalo</span>
-                        <span class="circle-tooltip">Zalo: 0342.684.980</span>
-                    </a>
-
-                    <!-- 3. TikTok -->
-                    <a href="https://www.tiktok.com/@ohuongxuhue" target="_blank" rel="noopener noreferrer" class="footer-circle-btn btn-tiktok" aria-label="TikTok" title="TikTok @ohuongxuhue">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.27 6.27 0 0 0 1.87-4.49v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-.87-.09z"/>
-                        </svg>
-                        <span class="circle-tooltip">TikTok @ohuongxuhue</span>
-                    </a>
-
-                    <!-- 4. Instagram -->
-                    <a href="https://www.instagram.com/ohuongxuhue" target="_blank" rel="noopener noreferrer" class="footer-circle-btn btn-insta" aria-label="Instagram" title="Instagram @ohuongxuhue">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                        <span class="circle-tooltip">Instagram</span>
-                    </a>
-
-                    <!-- 5. Email -->
-                    <a href="mailto:lienhe@ohuongxuhue.vn" class="footer-circle-btn btn-email" aria-label="Email" title="Email: lienhe@ohuongxuhue.vn">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-                        <span class="circle-tooltip">Email Liên Hệ</span>
-                    </a>
-                </div>
             </div>
         </div>
 
@@ -1325,5 +1263,40 @@
     <script src="hue-ambient.js?v=3.0.0"></script>
     <!-- Bản Đồ Tương Tác Ẩm Thực Cố Đô -->
     <script src="hue-food-map.js"></script>
+    <script src="hero-slideshow.js?v=20261018-fast" defer></script>
+    <link rel="stylesheet" href="contact-widget.css?v=20261029-social">
+    <script src="contact-widget.js?v=20261029-facebook" defer></script>
+<dialog id="homeConsultationModal" class="home-consultation-dialog" aria-labelledby="homeConsultationTitle" aria-describedby="homeConsultationDescription">
+    <div class="home-promotion-content">
+        <button type="button" class="home-consultation-close" data-consultation-close aria-label="Đóng đăng ký nhận tin">&times;</button>
+        <div class="home-promotion-copy">
+            <p class="home-promotion-eyebrow">O HƯƠNG XỨ HUẾ</p>
+            <h2 id="homeConsultationTitle">ĐĂNG KÝ NHẬN TIN<br>KHUYẾN MÃI</h2>
+            <p class="home-promotion-offer">Đón ưu đãi, thưởng vị Huế</p>
+            <p id="homeConsultationDescription">Để lại email để nhận thông tin ưu đãi, đặc sản mới và gợi ý quà biếu từ O Hương Xứ Huế.</p>
+            <form action="ohuongxuhue/index.php?controller=contact&amp;action=submit" method="POST" class="home-promotion-form" data-consultation-form>
+                <input type="hidden" name="intent" value="newsletter">
+                <label class="home-promotion-label" for="hc_email">Email <span aria-hidden="true">*</span></label>
+                <input type="email" id="hc_email" name="email" placeholder="Email của bạn *" maxlength="254" autocomplete="email" required>
+                <label class="home-promotion-label" for="hc_phone">Số điện thoại (không bắt buộc)</label>
+                <input type="tel" id="hc_phone" name="phone" placeholder="Số điện thoại (không bắt buộc)" maxlength="30" autocomplete="tel">
+                <div class="home-consultation-trap" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+                <label class="home-promotion-consent"><input type="checkbox" name="consent" value="1" required><span>Tôi đồng ý để O Hương Xứ Huế sử dụng thông tin trên để liên hệ và gửi tin khuyến mãi.</span></label>
+                <div class="home-promotion-actions">
+                    <button type="submit" class="home-promotion-submit">ĐĂNG KÝ NGAY</button>
+                    <button type="button" class="home-consultation-later" data-consultation-close>Để lần sau nhé!</button>
+                </div>
+            </form>
+            <p class="home-consultation-status" data-consultation-status role="status" aria-live="polite"></p>
+        </div>
+        <div class="home-promotion-art" aria-hidden="true">
+            <span class="home-promotion-decoration home-promotion-decoration-top">ƯU ĐÃI</span>
+            <img class="home-promotion-logo" src="images/logo.jpg" alt="" width="280" height="280">
+            <span class="home-promotion-decoration home-promotion-decoration-bottom">VỊ NGON CỐ ĐÔ</span>
+        </div>
+    </div>
+</dialog>
+<link rel="stylesheet" href="home-consultation.css?v=20261008-promotion">
+<script src="home-consultation.js?v=20261029-promotion-12s" defer></script>
 </body>
 </html>

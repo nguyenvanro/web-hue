@@ -1,14 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <link rel="icon" type="image/x-icon" href="./images/logo.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <title>Hệ Thống Cửa Hàng & Showroom - O Hương Xứ Huế</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20261017-kim-long-restored">
     <link rel="stylesheet" href="hue-ambient.css?v=3.0.0">
+<script src="header-search.js?v=20261006-1" defer></script>
+<link rel="stylesheet" href="responsive.css?v=20261029-2">
+<script src="responsive.js?v=20261029-2" defer></script>
 </head>
 <body>
     <!-- KHÔNG GIAN HOA VĂN TRỐNG ĐỒNG ĐÔNG SƠN HUẾ XOAY ĐỘNG (ROYAL ROTATING BRONZE DRUM BACKGROUND) -->
@@ -30,19 +34,12 @@
                 </div>
             </a>
 
-                        <div class="search-bar">
-                <select id="headerCategorySelect">
-                    <option value="">Tất cả đặc sản</option>
-                    <option value="ban-chay">🔥 Bán chạy nhất</option>
-                    <option value="Bánh">Bánh Huế</option>
-                    <option value="Mè Xửng">Mè Xửng &amp; Kẹo</option>
-                    <option value="Trà">Trà Cung Đình</option>
-                    <option value="Mắm">Mắm Cố Đô</option>
-                    <option value="Ăn Vặt">Đồ Ăn Vặt</option>
-                </select>
-                <input type="search" id="headerSearchInput" placeholder="Tìm kiếm đặc sản Huế thơm ngon...">
-                <button type="button" id="headerSearchBtn">🔍 Tìm kiếm</button>
-            </div>
+                        <form class="search-bar" role="search" method="get" action="ohuongxuhue/index.php" data-search-url="ohuongxuhue/index.php?controller=product&amp;action=ajax_search">
+                <input type="hidden" name="controller" value="dac-san">
+                <div class="search-input-wrapper"><input type="search" name="q" id="headerSearchInput" aria-label="Tìm kiếm đặc sản đang bán" placeholder="Tìm kiếm đặc sản Huế thơm ngon..." autocomplete="off"></div>
+                <button type="submit" id="headerSearchBtn">🔍 Tìm kiếm</button>
+                <div class="live-search-dropdown" id="liveSearchResults" aria-label="Gợi ý đặc sản" style="display: none;"></div>
+            </form>
 
             <div class="header-actions">
                 <a href="gio-hang.html" class="header-cart-action" title="Giỏ Hàng" style="text-decoration:none; position:relative; display:inline-flex; align-items:center;">
@@ -195,7 +192,7 @@
                     </ul>
                 </div>
             </li>
-            <li><a href="blog.html">Blog</a></li>
+            <li class="nav-item-blog"><a href="blog.html">BLOG <span class="nav-dropdown-caret">▾</span></a><ul class="nav-blog-submenu" aria-label="Chuyên mục Blog"><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=am-thuc">GÓC ẨM THỰC</a></li><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=du-lich">GÓC DU LỊCH</a></li></ul></li>
             <li><a href="lien-he.html">Liên hệ</a></li>
             <li><a href="cua-hang.html" class="active" style="color: #fcebb6; font-weight: 700;">Cửa hàng</a></li>
         </ul>
@@ -221,8 +218,8 @@
             <div class="store-grid">
                 <div class="store-card">
                     <div class="store-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="Showroom Cố Đô">
-                        <span class="store-badge">Trụ Sở Chính</span>
+                        <img src="images/stores-ai/khong-gian-tra-banh-hue.png" alt="Showroom Cố Đô">
+                        <span class="store-badge">Trụ Sở Chính</span><span class="store-image-caption">Ảnh minh họa</span>
                     </div>
                     <div class="store-body">
                         <span class="store-type">Trụ sở & Showroom Trải Nghiệm</span>
@@ -259,33 +256,24 @@
 
                 <div class="store-card">
                     <div class="store-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80" alt="Làng Nghề Kim Long">
-                        <span class="store-badge">Làng Nghề Truyền Thống</span>
+                        <img src="images/stores-ai/nghe-nhan-lam-banh.jpeg" alt="Không Gian Làng Nghề Bánh Ép Huế">
+                        <span class="store-badge">Làng Nghề Truyền Thống</span><span class="store-image-caption">Ảnh minh họa</span>
                     </div>
                     <div class="store-body">
-                        <span class="store-type">Cơ sở sản xuất & Showroom Quà Tặng</span>
-                        <h3 class="store-name">Không Gian Làng Nghề Kim Long</h3>
+                        <span class="store-type">Cơ sở sản xuất &amp; Showroom Quà Tặng</span>
+                        <h3 class="store-name">Không Gian Làng Nghề Bánh Ép Huế</h3>
                         <div class="store-details-list">
-                            <div class="store-detail-row">
-                                <span class="detail-icon">📍</span>
-                                <div><strong>Địa chỉ:</strong><p>45 Đường Kim Long, TP. Huế (Cách chùa Thiên Mụ 500m)</p></div>
-                            </div>
-                            <div class="store-detail-row">
-                                <span class="detail-icon">📞</span>
-                                <div><strong>Hotline:</strong><p>0234 359 8888</p></div>
-                            </div>
-                            <div class="store-detail-row">
-                                <span class="detail-icon">⏰</span>
-                                <div><strong>Giờ phục vụ:</strong><p>07:00 - 21:00 (Mỗi ngày)</p></div>
-                            </div>
+                            <div class="store-detail-row"><span class="detail-icon">📍</span><div><strong>Địa chỉ:</strong><p>45 Đường Kim Long, TP. Huế (Cách chùa Thiên Mụ 500m)</p></div></div>
+                            <div class="store-detail-row"><span class="detail-icon">📞</span><div><strong>Hotline:</strong><p>0234 359 8888</p></div></div>
+                            <div class="store-detail-row"><span class="detail-icon">⏰</span><div><strong>Giờ phục vụ:</strong><p>07:00 - 21:00 (Mỗi ngày)</p></div></div>
                         </div>
                         <div class="store-services-box">
-                            <strong>✨ Tiện ích & Trải nghiệm miễn phí:</strong>
+                            <strong>✨ Tiện ích &amp; Trải nghiệm bánh ép Huế:</strong>
                             <ul>
-                                <li>✓ Trải nghiệm gói bánh lọc cùng nghệ nhân</li>
-                                <li>✓ Mua mè xửng nóng hổi vừa mới ra lò</li>
-                                <li>✓ Bãi đỗ xe ô tô & xe du lịch 45 chỗ rộng rãi</li>
-                                <li>✓ Miễn phí thử các vị mắm & bánh đặc sản</li>
+                                <li>✓ Tìm hiểu cách làm bánh ép Huế truyền thống</li>
+                                <li>✓ Quan sát thao tác ép bánh trên khuôn gang của người thợ</li>
+                                <li>✓ Gợi ý thưởng thức bánh ép cùng rau và nước chấm</li>
+                                <li>✓ Tư vấn chọn bánh ép và đóng gói đặc sản làm quà</li>
                             </ul>
                         </div>
                         <div class="store-card-actions">
@@ -294,11 +282,10 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="store-card">
                     <div class="store-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80" alt="Chi nhánh HCM">
-                        <span class="store-badge">Trung Tâm Miền Nam</span>
+                        <img src="images/stores-ai/trung-bay-dac-san-hue.png" alt="Chi nhánh HCM">
+                        <span class="store-badge">Trung Tâm Miền Nam</span><span class="store-image-caption">Ảnh minh họa</span>
                     </div>
                     <div class="store-body">
                         <span class="store-type">Chi nhánh phân phối & Giao hàng hỏa tốc</span>
@@ -334,8 +321,8 @@
 
                 <div class="store-card">
                     <div class="store-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Chi nhánh Hà Nội">
-                        <span class="store-badge">Trung Tâm Miền Bắc</span>
+                        <img src="images/stores-ai/dong-goi-qua-bieu-hue.png" alt="Chi nhánh Hà Nội">
+                        <span class="store-badge">Trung Tâm Miền Bắc</span><span class="store-image-caption">Ảnh minh họa</span>
                     </div>
                     <div class="store-body">
                         <span class="store-type">Chi nhánh phân phối & Giao hàng hỏa tốc</span>
@@ -408,5 +395,7 @@
     </script>
     <!-- Trải Nghiệm Độc Bản: Không Gian Cố Đô -->
     <script src="hue-ambient.js?v=3.0.0"></script>
+    <link rel="stylesheet" href="contact-widget.css?v=20261029-social">
+    <script src="contact-widget.js?v=20261029-facebook" defer></script>
 </body>
 </html>

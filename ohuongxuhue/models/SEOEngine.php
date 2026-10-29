@@ -10,6 +10,40 @@
  */
 
 class SEOEngine {
+    /** Metadata for the server-rendered article, also usable outside WordPress. */
+    public static function renderBlogArticleHead($article) {
+        $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
+        $canonical = BlogModel::articleUrl($article['id'], true);
+        $title = $article['seo_title'] ?? ($article['title'] . ' | O Hương Xứ Huế');
+        $description = $article['meta_description'] ?? $article['summary'];
+        $image = $article['image'];
+        if (!preg_match('~^https?://~', $image)) {
+            $image = dirname(strtok($canonical, '?')) . '/' . preg_replace('~^\./~', '', $image);
+        }
+        echo '<title>' . $escape($title) . '</title>' . "\n";
+        echo '<meta name="description" content="' . $escape($description) . '">' . "\n";
+        echo '<link rel="canonical" href="' . $escape($canonical) . '">' . "\n";
+        foreach (['type' => 'article', 'locale' => 'vi_VN', 'title' => $title, 'description' => $description, 'url' => $canonical, 'image' => $image, 'image:alt' => $article['title']] as $key => $value) {
+            echo '<meta property="og:' . $key . '" content="' . $escape($value) . '">' . "\n";
+        }
+        foreach (['card' => 'summary_large_image', 'title' => $title, 'description' => $description, 'image' => $image] as $key => $value) {
+            echo '<meta name="twitter:' . $key . '" content="' . $escape($value) . '">' . "\n";
+        }
+        $published = DateTime::createFromFormat('!d/m/Y', $article['date']);
+        $modified = DateTime::createFromFormat('!Y-m-d', $article['modified']);
+        $schema = [
+            '@context' => 'https://schema.org', '@type' => 'BlogPosting',
+            'headline' => $article['title'], 'description' => $description,
+            'url' => $canonical, 'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],
+            'image' => [$image], 'inLanguage' => 'vi-VN', 'articleSection' => $article['category'],
+            'author' => ['@type' => 'Organization', 'name' => $article['author']],
+            'publisher' => ['@type' => 'Organization', 'name' => 'O Hương Xứ Huế'],
+        ];
+        if ($published) $schema['datePublished'] = $published->format('Y-m-d');
+        if ($modified) $schema['dateModified'] = $modified->format('Y-m-d');
+        echo '<script type="application/ld+json">' . json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) . '</script>' . "\n";
+    }
+
     private static $defaultTitle       = 'O Hương Xứ Huế | Vị Ngon Cố Đô - Đặc Sản Cung Đình Huế';
     private static $defaultDescription = 'Thưởng thức và đặt mua 24 món đặc sản Cố Đô Huế chính gốc: Bánh ép khô, bánh ép dẻo Thuận An, mắm tôm chua đu đủ, mắm ruốc, trà cung đình, tré bò, hạt sen Tịnh Tâm, nem chua Huế. Giao hàng toàn quốc chuẩn vị truyền thống triều Nguyễn.';
     private static $defaultKeywords    = 'đặc sản huế, bánh ép huế, bánh ép khô, mắm tôm chua đu đủ, trà cung đình huế, tré bò huế, hạt sen huế, nem chua huế, kẹo mè xửng, mắm ruốc huế, o hương xứ huế';
@@ -110,7 +144,7 @@ class SEOEngine {
         // 2. Kiểm tra nếu đang xem bài viết Góc Ẩm Thực (Blog)
         if ($controller === 'blog' && $id > 0 && class_exists('BlogModel')) {
             $blogModel = new BlogModel();
-            $post = $blogModel->getPostById($id);
+            $post = $blogModel->getById($id);
             if ($post) {
                 $cleanDesc = strip_tags($post['summary'] ?? ($post['content'] ?? ''));
                 $data['type']        = 'article';
@@ -193,10 +227,6 @@ class SEOEngine {
             'image'            => $defaultImg,
             'description'      => self::$defaultDescription,
             'telephone'        => '0342684980',
-            'sameAs'           => [
-                'https://www.facebook.com/share/17ZYCnJpnx/',
-                'https://zalo.me/0342684980'
-            ],
             'priceRange'       => '30.000₫ - 300.000₫',
             'servesCuisine'    => 'Ẩm thực Huế, Đặc sản Cố Đô',
             'address'          => [
@@ -479,9 +509,9 @@ class SEOEngine {
         }
         if (class_exists('BlogModel')) {
             $blogModel = new BlogModel();
-            $posts = $blogModel->getAllPosts();
+            $posts = $blogModel->getAll();
             foreach ($posts as $post) {
-                $bUrl = $siteUrl . '?controller=blog&amp;id=' . $post['id'];
+                $bUrl = BlogModel::articleUrl($post['id'], true);
                 echo "  <url>\n";
                 echo "    <loc>" . esc_url($bUrl) . "</loc>\n";
                 echo "    <lastmod>{$now}</lastmod>\n";

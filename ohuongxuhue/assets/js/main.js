@@ -53,24 +53,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
     }
 
-    // 3. Xử lý tìm kiếm cơ bản
-    const searchInput = document.querySelector('.search-bar input');
-    const searchButton = document.querySelector('.search-bar button');
 
-    if (searchButton && searchInput) {
-        searchButton.addEventListener('click', function () {
-            const keyword = searchInput.value.trim();
-            if (keyword) {
-                alert('Đang tìm kiếm đặc sản: "' + keyword + '"');
-            } else {
-                searchInput.focus();
-            }
-        });
-
-        searchInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                searchButton.click();
-            }
-        });
-    }
 });

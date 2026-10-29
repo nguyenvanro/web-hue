@@ -13,7 +13,7 @@ $detailUrl = function_exists('home_url') ? home_url('/?controller=product&action
     <nav class="breadcrumb-nav">
         <a href="<?php echo esc_url($homeUrl); ?>">Trang chủ</a>
         <span>&rsaquo;</span>
-        <a href="<?php echo esc_url(home_url('/dac-san/')); ?>"><?php echo htmlspecialchars($product['category'] ?? 'Đặc Sản Huế'); ?></a>
+        <a href="<?php echo esc_url(function_exists('home_url') ? home_url('/dac-san/') : 'index.php?controller=dac-san'); ?>"><?php echo htmlspecialchars($product['category'] ?? 'Đặc Sản Huế'); ?></a>
         <span>&rsaquo;</span>
         <span class="current-crumb"><?php echo htmlspecialchars($product['name']); ?></span>
     </nav>
@@ -222,6 +222,7 @@ $detailUrl = function_exists('home_url') ? home_url('/?controller=product&action
     <!-- ========================================================== -->
     <!-- KHỐI ĐÁNH GIÁ & PHẢN HỒI KÈM HÌNH ẢNH THỰC TẾ (CUSTOMER UGC) -->
     <!-- ========================================================== -->
+    <?php if ($reviewsEnabled ?? false): ?>
     <div class="product-reviews-section">
         <!-- Tiêu đề phân đoạn -->
         <div class="reviews-section-title-wrap">
@@ -445,6 +446,8 @@ $detailUrl = function_exists('home_url') ? home_url('/?controller=product&action
             <?php endif; ?>
         </div>
     </div>
+
+    <?php endif; ?>
 
     <!-- STYLE NỘI BỘ CHO KHỐI ĐÁNH GIÁ (ĐẢM BẢO HOÀN TOÀN CHUẨN GIAO DIỆN HOÀNG GIA HUẾ) -->
     <style>
@@ -1170,7 +1173,7 @@ function addToCartDetail(id, productName) {
 
 function buyNowDetail(id, productName) {
     var qty = parseInt(document.getElementById('buyQuantity').value) || 1;
-    var checkoutUrl = '<?php echo function_exists("wc_get_checkout_url") ? wc_get_checkout_url() : home_url("/thanh-toan/"); ?>';
+    var checkoutUrl = <?php echo json_encode(function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : (function_exists('home_url') ? home_url('/thanh-toan/') : 'index.php?controller=cart&action=checkout'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
     window.location.href = 'index.php?controller=cart&action=add&id=' + id + '&quantity=' + qty + '&redirect=' + encodeURIComponent(checkoutUrl);
 }
 

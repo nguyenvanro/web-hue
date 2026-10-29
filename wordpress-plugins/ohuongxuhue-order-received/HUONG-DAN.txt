@@ -1,0 +1,20 @@
+O HƯƠNG XỨ HUẾ — GIAO DIỆN XÁC NHẬN ĐƠN HÀNG
+
+Cài đặt:
+WordPress > Plugin > Cài mới > Tải plugin lên > chọn file ZIP > Cài đặt > Kích hoạt.
+Sau đó Purge All và Ctrl + F5 tại trang /thanh-toan/order-received/...
+Nếu dùng File Manager: giải nén thư mục ohuongxuhue-order-received vào
+/public_html/wp-content/plugins/, rồi vào quản trị WordPress để kích hoạt.
+
+Tiện ích chỉ nạp trên trang xác nhận đơn WooCommerce, theo cấu trúc HTML bạn cung cấp.
+Giữ QR, thông tin chuyển khoản, sản phẩm và địa chỉ nhận hàng hiện có.
+Ẩn mục lục và thông báo lặp, gộp thông tin chính và thu gọn phần chi tiết.
+Nút Kiểm tra thanh toán chỉ đọc trạng thái từ WooCommerce, không đổi trạng thái đơn.
+Nút xác nhận chuyển khoản cũ được ẩn và vô hiệu hóa trong giao diện này.
+Thông tin QR/tài khoản/số tiền/nội dung chuyển khoản không được cấu hình lại.
+
+Đã kiểm tra bằng HTML mẫu và mô phỏng trạng thái WooCommerce.
+Chưa cài vào hosting hoặc thử thanh toán/đơn hàng thật.
+Bản xem thử dùng QR và thông tin khách hàng minh họa.
+
+Gỡ thay đổi: vô hiệu hóa plugin này trong quản trị WordPress.

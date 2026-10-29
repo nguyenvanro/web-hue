@@ -1,14 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
+    <link rel="icon" type="image/x-icon" href="./images/logo.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <title>Giỏ Hàng & Đặt Mua Đặc Sản - O Hương Xứ Huế</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20261006-search-2">
     <link rel="stylesheet" href="hue-ambient.css?v=3.0.0">
+<script src="header-search.js?v=20261006-1" defer></script>
+<link rel="stylesheet" href="responsive.css?v=20261029-2">
+<script src="responsive.js?v=20261029-2" defer></script>
 </head>
 <body>
     <!-- KHÔNG GIAN HOA VĂN TRỐNG ĐỒNG ĐÔNG SƠN HUẾ XOAY ĐỘNG (ROYAL ROTATING BRONZE DRUM BACKGROUND) -->
@@ -30,19 +34,12 @@
                 </div>
             </a>
 
-                        <div class="search-bar">
-                <select id="headerCategorySelect">
-                    <option value="">Tất cả đặc sản</option>
-                    <option value="ban-chay">🔥 Bán chạy nhất</option>
-                    <option value="Bánh">Bánh Huế</option>
-                    <option value="Mè Xửng">Mè Xửng &amp; Kẹo</option>
-                    <option value="Trà">Trà Cung Đình</option>
-                    <option value="Mắm">Mắm Cố Đô</option>
-                    <option value="Ăn Vặt">Đồ Ăn Vặt</option>
-                </select>
-                <input type="search" id="headerSearchInput" placeholder="Tìm kiếm đặc sản Huế thơm ngon...">
-                <button type="button" id="headerSearchBtn">🔍 Tìm kiếm</button>
-            </div>
+                        <form class="search-bar" role="search" method="get" action="ohuongxuhue/index.php" data-search-url="ohuongxuhue/index.php?controller=product&amp;action=ajax_search">
+                <input type="hidden" name="controller" value="dac-san">
+                <div class="search-input-wrapper"><input type="search" name="q" id="headerSearchInput" aria-label="Tìm kiếm đặc sản đang bán" placeholder="Tìm kiếm đặc sản Huế thơm ngon..." autocomplete="off"></div>
+                <button type="submit" id="headerSearchBtn">🔍 Tìm kiếm</button>
+                <div class="live-search-dropdown" id="liveSearchResults" aria-label="Gợi ý đặc sản" style="display: none;"></div>
+            </form>
 
             <div class="header-actions">
                 <a href="gio-hang.html" class="header-cart-action" title="Giỏ Hàng" style="text-decoration:none; position:relative; display:inline-flex; align-items:center;">
@@ -195,7 +192,7 @@
                     </ul>
                 </div>
             </li>
-            <li><a href="blog.html">Blog</a></li>
+            <li class="nav-item-blog"><a href="blog.html">BLOG <span class="nav-dropdown-caret">▾</span></a><ul class="nav-blog-submenu" aria-label="Chuyên mục Blog"><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=am-thuc">GÓC ẨM THỰC</a></li><li><a href="ohuongxuhue/index.php?controller=blog&amp;cat=du-lich">GÓC DU LỊCH</a></li></ul></li>
             <li><a href="lien-he.html">Liên hệ</a></li>
             <li><a href="cua-hang.html">Cửa hàng</a></li>
         </ul>
@@ -237,7 +234,6 @@
                 <h3>Liên Hệ Cửa Hàng</h3>
                 <p>📍 123 Đường Lê Lợi, TP. Huế</p>
                 <p>📞 Hotline: 0905.123.456</p>
-                <p>✉️ Email: lienhe@ohuongxuhue.com</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -517,5 +513,7 @@
     </script>
     <!-- Trải Nghiệm Độc Bản: Không Gian Cố Đô -->
     <script src="hue-ambient.js?v=3.0.0"></script>
+    <link rel="stylesheet" href="contact-widget.css?v=20261029-social">
+    <script src="contact-widget.js?v=20261029-facebook" defer></script>
 </body>
 </html>

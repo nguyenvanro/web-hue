@@ -14,6 +14,7 @@ $statusLabels = [
 ?>
 
 <div class="admin-wrapper">
+    <p><a href="<?php echo esc_url(function_exists('home_url') ? home_url('/?controller=chat&action=inbox') : 'index.php?controller=chat&action=inbox'); ?>">💬 Mở hộp Chat khách hàng</a></p>
     <!-- Tiêu đề Admin -->
     <div class="admin-header-box">
         <div>

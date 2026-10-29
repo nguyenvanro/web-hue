@@ -1,0 +1,123 @@
+.hue-contact-widget {
+    position: fixed;
+    right: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 100010;
+    font-family: inherit;
+}
+.hue-contact-toggle {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    padding: 9px 0;
+    align-content: center;
+    gap: 3px;
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    background: #7a1e2e;
+    color: white;
+    box-shadow: 0 5px 20px #4a0e1733;
+    cursor: pointer;
+    animation: hue-contact-shake 2.4s ease-in-out infinite;
+}
+.hue-contact-toggle-label {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.hue-contact-toggle:hover,
+.hue-contact-toggle:focus-visible,
+.hue-contact-toggle[aria-expanded="true"] {
+    animation: none;
+}
+.hue-contact-toggle:focus-visible,
+.hue-contact-option:focus-visible {
+    outline: 3px solid #d4af37;
+    outline-offset: 4px;
+}
+.hue-contact-panel {
+    position: absolute;
+    bottom: 88px;
+    right: 0;
+    width: min(360px, calc(100vw - 48px));
+    padding: 14px 10px;
+    border: 1px solid #efeae2;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 35px #0003;
+    max-height: calc(100dvh - 130px);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+.hue-contact-panel[hidden] { display: none; }
+.hue-contact-heading {
+    margin: 0 8px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #7a1e2e;
+}
+.hue-contact-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: 10px;
+    color: #45372f;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.hue-contact-option:hover { background: #fbf4ea; }
+.hue-contact-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+}
+.hue-contact-phone { background: #ed5667; }
+.hue-contact-zalo { background: #159cda; font-size: 11px; font-weight: 800; }
+.hue-contact-facebook { background: #1877f2; }
+.hue-contact-tiktok { background: #101010; }
+.hue-contact-mail { background: #22becb; }
+.hue-contact-location { background: #d4af37; }
+@keyframes hue-contact-shake {
+    0%, 40%, 100% { transform: translateX(0) rotate(0); }
+    5%, 15%, 25%, 35% { transform: translateX(-5px) rotate(-24deg); }
+    10%, 20%, 30% { transform: translateX(5px) rotate(24deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hue-contact-toggle { animation: none; }
+}
+
+/* Staff chat and contact channels. */
+.hue-contact-widget [hidden] { display: none !important; }
+.hue-contact-option { width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; font-size: 16px; cursor: pointer; box-sizing: border-box; }
+.hue-contact-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+.hue-chat-window { position: absolute; right: 0; bottom: 88px; display: flex; flex-direction: column; width: min(390px, calc(100vw - 32px)); height: min(550px, calc(100dvh - 130px)); min-height: 260px; overflow: hidden; background: #fff; border: 1px solid #efeae2; border-radius: 16px; box-shadow: 0 12px 45px #0003; color: #34272a; }
+.hue-chat-header { display: flex; align-items: center; gap: 12px; padding: 18px 16px; background: #7a1e2e; color: #fff; flex: 0 0 auto; }
+.hue-chat-logo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #fff; }
+.hue-chat-header > div { min-width: 0; flex: 1; }
+.hue-chat-header h2 { margin: 0 0 4px; font-family: inherit; font-size: 20px; color: #fff; line-height: 1.3; }
+.hue-chat-header p { margin: 0; color: #f9e6da; font-size: 12px; line-height: 1.5; }
+.hue-chat-close { border: 0; background: transparent; padding: 4px; color: #fff; font-size: 30px; line-height: 1; cursor: pointer; }
+.hue-chat-messages { flex: 1 1 auto; min-height: 0; padding: 20px 14px; overflow-y: auto; overscroll-behavior: contain; background: #fff; }
+.hue-chat-row { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 16px; }
+.hue-chat-row.is-guest { align-items: flex-end; }
+.hue-chat-bubble { max-width: 88%; margin: 0; padding: 12px 14px; border-radius: 12px 12px 12px 2px; background: #f2f2f2; white-space: pre-wrap; overflow-wrap: anywhere; color: #34272a; line-height: 1.6; font-size: 14px; }
+.hue-chat-row.is-guest .hue-chat-bubble { color: #fff; background: #7a1e2e; border-radius: 12px 12px 2px 12px; }
+.hue-chat-row small { padding: 5px 2px 0; color: #847673; font-size: 10px; }
+.hue-chat-status { flex: 0 0 auto; padding: 8px 14px; margin: 0; color: #74625b; background: #fdf9f2; font-size: 11px; line-height: 1.5; }
+.hue-chat-retry { margin: 6px auto; padding: 7px 12px; border: 1px solid #7a1e2e; border-radius: 6px; color: #7a1e2e; background: #fff; cursor: pointer; }
+.hue-chat-form { display: flex; align-items: center; gap: 6px; padding: 12px; border-top: 1px solid #eee; background: #fff; flex: 0 0 auto; }
+.hue-chat-form textarea { min-width: 0; flex: 1; height: 44px; max-height: 80px; resize: vertical; border: 0; padding: 10px 4px; outline-offset: 0; color: #34272a; font: inherit; font-size: 16px; box-sizing: border-box; }
+.hue-chat-send { padding: 10px 13px; border: 0; border-radius: 8px; background: #7a1e2e; color: #fff; font: inherit; font-size: 13px; cursor: pointer; }
+.hue-chat-send:disabled { opacity: .5; cursor: wait; }
+.hue-chat-emoji { padding: 4px; background: none; border: 0; color: #82716a; font-size: 24px; cursor: pointer; }
+.hue-chat-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 600px) { .hue-contact-widget { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); } .hue-chat-window { height: min(520px, calc(100dvh - 120px)); bottom: 84px; } }
+@media (max-height: 450px) { .hue-chat-window { position: fixed; top: 8px; bottom: 8px; right: 8px; height: auto; min-height: 0; } .hue-chat-header { padding: 8px 12px; } }

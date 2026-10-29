@@ -14,6 +14,20 @@ if (!function_exists('sanitize_text_field')) {
         return is_string($str) ? trim(strip_tags($str)) : '';
     }
 }
+if (!function_exists('sanitize_textarea_field')) {
+    function sanitize_textarea_field($str) {
+        if (!is_string($str)) {
+            return '';
+        }
+        // Giữ xuống dòng trong ghi chú khi chạy XAMPP ngoài WordPress.
+        return trim(str_replace(["\r\n", "\r"], "\n", strip_tags($str)));
+    }
+}
+if (!function_exists('esc_attr')) {
+    function esc_attr($text) {
+        return htmlspecialchars((string) $text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+}
 if (!function_exists('esc_url')) {
     function esc_url($url) {
         return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
@@ -50,7 +64,10 @@ $page       = isset($_GET['page']) ? strtolower(trim($_GET['page'])) : '';
 $action     = isset($_GET['action']) ? strtolower(trim($_GET['action'])) : 'index';
 
 // Điều hướng theo controller và action
-if ($controller === 'auth') {
+if ($controller === 'chat') {
+    require_once __DIR__ . '/controllers/ChatController.php';
+    (new ChatController())->handle($action);
+} elseif ($controller === 'auth') {
     $auth = new AuthController();
     if ($action === 'register') {
         $auth->register();
@@ -95,7 +112,9 @@ if ($controller === 'auth') {
     $cart->orders();
 } elseif ($controller === 'product' || $controller === 'detail' || $page === 'product' || $page === 'detail') {
     $prod = new ProductController();
-    if ($action === 'all' || $action === 'catalog') {
+    if ($action === 'ajax_search') {
+        $prod->ajax_search();
+    } elseif ($action === 'all' || $action === 'catalog') {
         $prod->all();
     } else {
         $prod->detail();
@@ -108,7 +127,8 @@ if ($controller === 'auth') {
     $blog->index();
 } elseif ($controller === 'lien-he' || $controller === 'contact' || $page === 'lien-he' || $page === 'contact') {
     $contact = new ContactController();
-    $contact->index();
+    if ($action === 'submit') $contact->submit();
+    else $contact->index();
 } elseif ($controller === 'cua-hang' || $controller === 'store' || $controller === 'stores' || $page === 'cua-hang' || $page === 'store') {
     $store = new StoreController();
     $store->index();

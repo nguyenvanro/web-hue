@@ -33,10 +33,15 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
 <!DOCTYPE html>
 <html <?php if (function_exists('language_attributes')) language_attributes(); else echo 'lang="vi"'; ?>>
 <head>
+    <link rel="icon" type="image/x-icon" href="<?php echo esc_url($theme_uri); ?>/assets/images/logo.ico">
     <meta charset="<?php echo function_exists('bloginfo') ? get_bloginfo('charset') : 'UTF-8'; ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php
-    if (class_exists('SEOEngine')) {
+    if (!empty($article)) {
+        require_once __DIR__ . '/../../models/SEOEngine.php';
+        SEOEngine::renderBlogArticleHead($article);
+        if (function_exists('remove_action')) remove_action('wp_head', '_wp_render_title_tag', 1);
+    } elseif (class_exists('SEOEngine')) {
         SEOEngine::renderHead($pageTitle ?? '', $currentNav ?? '');
     } else {
         echo '    <title>' . htmlspecialchars($pageTitle) . '</title>' . "\n";
@@ -51,12 +56,12 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
     
     <!-- PRELOAD LCP HERO BANNER ĐẢM BẢO TỐC ĐỘ TẢI TRANG TỨC THÌ -->
     <?php if ($currentNav === 'home'): ?>
-    <link rel="preload" as="image" href="<?php echo esc_url($theme_uri); ?>/assets/images/codo-main.jpg">
+    <link rel="preload" as="image" href="<?php echo esc_url($theme_uri); ?>/assets/images/banner/Hat_Sen_Tuoi_Hue.png">
     <?php endif; ?>
 
     <!-- STYLESHEET TỐI ƯU (BỘ NHỚ ĐỆM TRÌNH DUYỆT 304 / DISK CACHE) -->
     <?php if (!function_exists('wp_head')): ?>
-    <link rel="stylesheet" href="<?php echo esc_url($theme_uri); ?>/assets/css/style.css?v=1.1.0">
+    <link rel="stylesheet" href="<?php echo esc_url($theme_uri); ?>/assets/css/style.css?v=<?php echo filemtime(__DIR__ . '/../../assets/css/style.css'); ?>">
     <?php endif; ?>
     <link rel="stylesheet" href="<?php echo esc_url($theme_uri); ?>/assets/css/hue-ambient.css?v=3.0.0">
     <link rel="stylesheet" href="<?php echo esc_url($theme_uri); ?>/assets/css/hue-food-map.css?v=1.1.0">
@@ -64,6 +69,9 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
         window.HUE_THEME_URI = '<?php echo esc_url($theme_uri); ?>';
     </script>
     <?php if (function_exists('wp_head')) wp_head(); ?>
+<link rel="stylesheet" href="<?php echo esc_url($theme_uri); ?>/assets/css/responsive.css?v=<?php echo filemtime(__DIR__ . '/../../assets/css/responsive.css'); ?>">
+<script src="<?php echo esc_url($theme_uri); ?>/assets/js/responsive.js?v=<?php echo filemtime(__DIR__ . '/../../assets/js/responsive.js'); ?>" defer></script>
+<script src="<?php echo esc_url($theme_uri); ?>/assets/js/header-search.js?v=<?php echo filemtime(__DIR__ . '/../../assets/js/header-search.js'); ?>" defer></script>
 </head>
 <body <?php if (function_exists('body_class')) body_class(); ?>>
 <?php if (function_exists('wp_body_open')) wp_body_open(); ?>
@@ -109,33 +117,23 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
                     <img src="<?php echo esc_url($theme_uri); ?>/assets/images/logo.jpg" alt="Logo O Hương Xứ Huế">
                 </div>
                 <div class="logo-text">
-                    <h1>O Hương Xứ Huế</h1>
+                    <?php if (!empty($article)): ?>
+                        <div class="site-brand-title">O Hương Xứ Huế</div>
+                    <?php else: ?>
+                        <h1>O Hương Xứ Huế</h1>
+                    <?php endif; ?>
                     <p class="logo-slogan">Vị Ngon Cố Đô</p>
                 </div>
             </a>
 
             <!-- KHUNG TÌM KIẾM SANG TRỌNG KÈM LIVE SEARCH GỢI Ý TỨC THÌ -->
-            <div class="search-bar">
-                <div class="search-category-wrapper">
-                    <?php 
-                        $curCat = isset($_GET['cat']) ? sanitize_text_field($_GET['cat']) : '';
-                        $curQ   = isset($_GET['q']) ? sanitize_text_field($_GET['q']) : '';
-                    ?>
-                    <select id="headerCategorySelect" aria-label="Chọn danh mục">
-                        <option value=""><?php echo class_exists('LanguageEngine') ? LanguageEngine::t('all_delicacies', 'Tất cả đặc sản') : 'Tất cả đặc sản'; ?></option>
-                        <option value="ban-chay" <?php echo ($curCat === 'ban-chay' || $curCat === 'best_seller') ? 'selected' : ''; ?>>🔥 Bán chạy nhất</option>
-                        <option value="Bánh" <?php echo ($curCat === 'Bánh' || $curCat === 'banh' || $curCat === 'banh-ep-hue') ? 'selected' : ''; ?>>Bánh Huế Tươi</option>
-                        <option value="Mè Xửng" <?php echo ($curCat === 'Mè Xửng' || $curCat === 'me-xung' || $curCat === 'keo-hue') ? 'selected' : ''; ?>>Mè Xửng & Kẹo Quà</option>
-                        <option value="Trà" <?php echo ($curCat === 'Trà' || $curCat === 'tra' || $curCat === 'tra-hue') ? 'selected' : ''; ?>>Trà Cung Đình</option>
-                        <option value="Mắm" <?php echo ($curCat === 'Mắm' || $curCat === 'mam' || $curCat === 'mam-hue') ? 'selected' : ''; ?>>Mắm Cố Đô</option>
-                        <option value="Ăn Vặt" <?php echo ($curCat === 'Ăn Vặt' || $curCat === 'an-vat') ? 'selected' : ''; ?>>Đồ Ăn Vặt</option>
-                    </select>
-                    <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </div>
+            <?php $curQ = sanitize_text_field($_GET['q'] ?? ''); ?>
+            <form class="search-bar" role="search" method="get" action="<?php echo esc_url(function_exists('home_url') ? home_url('/') : 'index.php'); ?>" data-search-url="<?php echo esc_url(function_exists('home_url') ? home_url('/?controller=product&action=ajax_search') : 'index.php?controller=product&action=ajax_search'); ?>">
+                <input type="hidden" name="controller" value="dac-san">
                 <div class="search-input-wrapper">
-                    <input type="search" id="headerSearchInput" value="<?php echo esc_attr($curQ); ?>" placeholder="<?php echo class_exists('LanguageEngine') ? LanguageEngine::t('search_placeholder', 'Tìm kiếm đặc sản Huế thơm ngon...') : 'Tìm kiếm đặc sản Huế thơm ngon...'; ?>" autocomplete="off">
+                    <input type="search" name="q" aria-label="Tìm kiếm đặc sản đang bán" id="headerSearchInput" value="<?php echo esc_attr($curQ); ?>" placeholder="<?php echo class_exists('LanguageEngine') ? LanguageEngine::t('search_placeholder', 'Tìm kiếm đặc sản Huế thơm ngon...') : 'Tìm kiếm đặc sản Huế thơm ngon...'; ?>" autocomplete="off">
                 </div>
-                <button type="button" id="headerSearchBtn" title="Tìm kiếm">
+                <button type="submit" id="headerSearchBtn" title="Tìm kiếm">
                     <svg class="search-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -144,8 +142,8 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
                 </button>
 
                 <!-- Dropdown kết quả gợi ý Live AJAX Search -->
-                <div class="live-search-dropdown" id="liveSearchResults" style="display: none;"></div>
-            </div>
+                <div class="live-search-dropdown" id="liveSearchResults" aria-label="Gợi ý đặc sản" style="display: none;"></div>
+            </form>
 
             <!-- CỤM NÚT HÀNH ĐỘNG ĐỒNG BỘ -->
             <div class="header-actions">
@@ -208,18 +206,12 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
             <ul class="nav-container">
                 <li><a href="<?php echo esc_url($site_url); ?>" class="<?php echo ($currentNav === 'home') ? 'active' : ''; ?>"><?php echo class_exists('LanguageEngine') ? LanguageEngine::t('nav_home', 'Trang Chủ') : 'Trang Chủ'; ?></a></li>
                 <li><a href="<?php echo esc_url($about_url); ?>" class="<?php echo ($currentNav === 'about') ? 'active' : ''; ?>"><?php echo class_exists('LanguageEngine') ? LanguageEngine::t('nav_about', 'Giới Thiệu') : 'Giới Thiệu'; ?></a></li>
-                                <li class="has-dropdown nav-item-dacsan">
+                <li class="has-dropdown nav-item-dacsan">
                     <a href="<?php echo esc_url($dacsan_url); ?>" class="<?php echo ($currentNav === 'dac-san') ? 'active' : ''; ?>">
                         <?php echo class_exists('LanguageEngine') ? LanguageEngine::t('nav_dacsan', 'Đặc Sản Huế') : 'Đặc Sản Huế'; ?>
                         <span class="nav-dropdown-caret">▾</span>
                     </a>
                     <div class="nav-dropdown-mega">
-                        <div class="dropdown-header-bar">
-                            <div class="dropdown-header-title">
-                                <span>DANH MỤC ĐẶC SẢN</span>
-                            </div>
-                            <span class="dropdown-header-badge">CỐ ĐÔ</span>
-                        </div>
                         <ul class="dropdown-category-list">
                             <?php foreach ($navCategories as $cat): 
                                 $catName = $cat['name'];
@@ -260,7 +252,13 @@ $navCategories = $navCategoryModel ? $navCategoryModel->getSidebarCategories() :
                         </ul>
                     </div>
                 </li>
-                <li><a href="<?php echo esc_url($blog_url); ?>" class="<?php echo ($currentNav === 'blog') ? 'active' : ''; ?>"><?php echo class_exists('LanguageEngine') ? LanguageEngine::t('nav_blog', 'Blog') : 'Blog'; ?></a></li>
+                <li class="nav-item-blog">
+                    <a href="<?php echo esc_url($blog_url); ?>" class="<?php echo ($currentNav === 'blog') ? 'active' : ''; ?>">BLOG <span class="nav-dropdown-caret">▾</span></a>
+                    <ul class="nav-blog-submenu" aria-label="Chuyên mục Blog">
+                        <li><a href="<?php echo esc_url($blog_url . (strpos($blog_url, '?') === false ? '?' : '&') . 'cat=am-thuc'); ?>">GÓC ẨM THỰC</a></li>
+                        <li><a href="<?php echo esc_url($blog_url . (strpos($blog_url, '?') === false ? '?' : '&') . 'cat=du-lich'); ?>">GÓC DU LỊCH</a></li>
+                    </ul>
+                </li>
                 <li><a href="<?php echo esc_url($contact_url); ?>" class="<?php echo ($currentNav === 'contact') ? 'active' : ''; ?>"><?php echo class_exists('LanguageEngine') ? LanguageEngine::t('nav_contact', 'Liên Hệ') : 'Liên Hệ'; ?></a></li>
                 <li><a href="<?php echo esc_url($store_url); ?>" class="<?php echo ($currentNav === 'store') ? 'active' : ''; ?>"><?php echo class_exists('LanguageEngine') ? LanguageEngine::t('nav_store', 'Cửa Hàng') : 'Cửa Hàng'; ?></a></li>
                 <li><a href="<?php echo esc_url($map_url); ?>" class="<?php echo ($currentNav === 'map') ? 'active' : ''; ?>" style="color: #ffd700; font-weight: 700;">🗺️ Bản Đồ Cố Đô</a></li>

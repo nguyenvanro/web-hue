@@ -867,6 +867,16 @@ class ProductModel extends BaseModel {
         return $products;
     }
 
+    public function getSellableProductsWithStock() {
+        return array_filter($this->getAllProductsWithStock(), function ($product) {
+            if (!empty($product['wc_id']) && function_exists('wc_get_product')) {
+                $wcProduct = wc_get_product($product['wc_id']);
+                return $wcProduct && $wcProduct->is_visible() && $wcProduct->is_purchasable() && $wcProduct->is_in_stock();
+            }
+            return (int) ($product['stock'] ?? 0) > 0;
+        });
+    }
+
     /**
      * Tìm chi tiết sản phẩm kèm số lượng tồn kho thực tế
      */
@@ -929,6 +939,67 @@ class ProductModel extends BaseModel {
         return true;
     }
 
+    /** Trừ tồn kho khi hệ thống MVC tạo đơn hàng. */
+    public function deductStock($productId, $quantity = 1) {
+        $productId = (int) $productId;
+        $quantity = (int) $quantity;
+        if ($productId <= 0 || $quantity <= 0) return false;
+        $product = $this->findProductById($productId);
+        if (!$product) return false;
+        if ((int) ($product['id'] ?? 0) !== $productId && (int) ($product['wc_id'] ?? 0) !== $productId) return false;
+
+        // Sản phẩm WooCommerce dùng kho của WooCommerce, không trừ thêm kho MVC.
+        if (!empty($product['wc_id']) && function_exists('wc_get_product')) {
+            $wcProduct = wc_get_product($product['wc_id']);
+            if (!$wcProduct) return false;
+            if (!$wcProduct->managing_stock()) return true;
+            if (function_exists('wc_update_product_stock')) {
+                $result = wc_update_product_stock($wcProduct, $quantity, 'decrease');
+                return $result !== false && $result !== null && !(function_exists('is_wp_error') && is_wp_error($result));
+            }
+            return false;
+        }
+
+        $stocks = $this->getAllStocksMap();
+        $initial = $stocks[$productId] ?? ['stock_quantity' => 50, 'sold_quantity' => 0];
+        if ($this->db) {
+            try {
+                $stmt = $this->db->prepare('INSERT IGNORE INTO product_stocks (product_id, stock_quantity, sold_quantity) VALUES (?, ?, ?)');
+                if (!$stmt || !$stmt->execute([$productId, (int) $initial['stock_quantity'], (int) $initial['sold_quantity']])) return false;
+                $stmt = $this->db->prepare('UPDATE product_stocks SET sold_quantity = sold_quantity + LEAST(stock_quantity, ?), stock_quantity = GREATEST(0, stock_quantity - ?), updated_at = NOW() WHERE product_id = ?');
+                if (!$stmt || !$stmt->execute([$quantity, $quantity, $productId])) return false;
+                $this->syncStocksBackup();
+                return true;
+            } catch (Throwable $e) {
+                error_log('Cannot deduct product stock: ' . $e->getMessage());
+                return false;
+            }
+        }
+
+        // Giữ cơ chế kho JSON của bản MVC khi không có kết nối MySQL.
+        $handle = fopen(self::$stocksBackupFile, 'c+');
+        if (!$handle) return false;
+        try {
+            if (!flock($handle, LOCK_EX)) return false;
+            $saved = json_decode(stream_get_contents($handle), true);
+            if (!is_array($saved)) $saved = $stocks;
+            $row = $saved[$productId] ?? $initial;
+            $deducted = min(max(0, (int) $row['stock_quantity']), $quantity);
+            $row['stock_quantity'] = max(0, (int) $row['stock_quantity'] - $quantity);
+            $row['sold_quantity'] = (int) $row['sold_quantity'] + $deducted;
+            $row['updated_at'] = date('Y-m-d H:i:s');
+            $saved[$productId] = $row;
+            $json = json_encode($saved, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            if ($json === false) return false;
+            rewind($handle);
+            if (!ftruncate($handle, 0)) return false;
+            return fwrite($handle, $json) === strlen($json) && fflush($handle);
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
     /**
      * Ghi nhận nhập hàng mới
      */
@@ -985,6 +1056,34 @@ class ProductModel extends BaseModel {
         }
 
         return $list;
+    }
+
+    /** Tổng hợp số liệu cho dashboard; giữ cách tính doanh thu của OrderModel. */
+    public function getFinancialSummary($orderModel) {
+        $stats = $orderModel->getStats();
+        $imports = $this->getImportHistory();
+        $importCost = 0;
+        foreach ($imports as $receipt) {
+            $importCost += (int) ($receipt['total_cost'] ?? ((int) ($receipt['quantity'] ?? 0) * (int) ($receipt['import_price'] ?? 0)));
+        }
+
+        $stock = 0;
+        $sold = 0;
+        foreach ($this->getAllProductsWithStock() as $product) {
+            $stock += (int) ($product['stock_quantity'] ?? 0);
+            $sold += (int) ($product['sold_quantity'] ?? 0);
+        }
+
+        $revenue = (int) ($stats['total_revenue'] ?? 0);
+        return [
+            'total_revenue' => $revenue,
+            'total_orders' => (int) ($stats['total_orders'] ?? 0),
+            'total_import_cost' => $importCost,
+            'total_imports_count' => count($imports),
+            'net_income' => $revenue - $importCost,
+            'total_stock' => $stock,
+            'total_sold' => $sold,
+        ];
     }
 
     /**

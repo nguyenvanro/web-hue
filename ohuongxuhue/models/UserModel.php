@@ -36,42 +36,68 @@ class UserModel extends BaseModel {
      * Đăng ký tài khoản người dùng mới (Mặc định vai trò là 'user')
      */
     public function register($fullname, $username, $email, $password, $phone = '', $role = 'user') {
-        // Kiểm tra trùng lặp
-        if ($this->findByUsername($username)) {
-            return ['status' => false, 'message' => 'Tên đăng nhập đã được sử dụng!'];
+        if (!$this->db) {
+            return ['status' => false, 'message' => 'Chưa kết nối được cơ sở dữ liệu. Vui lòng thử lại sau.'];
         }
 
-        if ($this->findByEmail($email)) {
-            return ['status' => false, 'message' => 'Email này đã được đăng ký!'];
-        }
-
-        // Mã hóa mật khẩu an toàn chuẩn BCRYPT / PASSWORD_DEFAULT
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-        if ($this->db) {
-            try {
-                $sql = "INSERT INTO users (fullname, username, email, password, phone, role) VALUES (?, ?, ?, ?, ?, ?)";
-                $stmt = $this->db->prepare($sql);
-                $res = $stmt->execute([$fullname, $username, $email, $hashedPassword, $phone, $role]);
-                if ($res) {
-                    return ['status' => true, 'message' => 'Đăng ký tài khoản thành công!'];
-                }
-            } catch (Throwable $e) {
-                return ['status' => false, 'message' => 'Lỗi hệ thống: ' . $e->getMessage()];
+        try {
+            $this->ensureUsersTable();
+            $stmt = $this->prepareUserQuery('SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1');
+            if (!$stmt->execute([$username, $email])) {
+                throw new RuntimeException('Cannot check existing account.');
             }
-        }
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($existing) {
+                return ['status' => false, 'message' => strcasecmp($existing['username'], $username) === 0
+                    ? 'Tên đăng nhập đã được sử dụng!' : 'Email này đã được đăng ký!'];
+            }
 
-        // Fallback lưu session nếu CSDL không khả dụng
-        $_SESSION['mock_user'] = [
-            'id'       => 999,
-            'fullname' => $fullname,
-            'username' => $username,
-            'email'    => $email,
-            'password' => $hashedPassword,
-            'phone'    => $phone,
-            'role'     => $role
-        ];
-        return ['status' => true, 'message' => 'Đăng ký thành công!'];
+            $stmt = $this->prepareUserQuery('INSERT INTO users (fullname, username, email, password, phone, role) VALUES (?, ?, ?, ?, ?, ?)');
+            if (!$stmt->execute([$fullname, $username, $email, password_hash($password, PASSWORD_DEFAULT), $phone, $role])) {
+                if (($stmt->errorInfo()[0] ?? '') === '23000') {
+                    return ['status' => false, 'message' => 'Tên đăng nhập hoặc email này đã được đăng ký!'];
+                }
+                throw new RuntimeException('Cannot save account.');
+            }
+            return ['status' => true, 'message' => 'Đăng ký tài khoản thành công!'];
+        } catch (Throwable $e) {
+            error_log('User registration failed: ' . $e->getMessage());
+            return ['status' => false, 'message' => 'Chưa thể tạo tài khoản. Vui lòng thử lại sau.'];
+        }
+    }
+
+    /** Tạo bảng tài khoản cho bản MVC chạy độc lập nếu chưa được cài đặt. */
+    private function ensureUsersTable() {
+        if ($this->db->query('SELECT id FROM users LIMIT 0') !== false) {
+            return;
+        }
+        $error = $this->db->errorInfo();
+        if (($error[0] ?? '') !== '42S02') {
+            throw new RuntimeException('Cannot access users table: ' . ($error[2] ?? 'unknown error'));
+        }
+        $sql = "CREATE TABLE IF NOT EXISTS users (
+            id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            fullname VARCHAR(255) NOT NULL,
+            username VARCHAR(100) NOT NULL,
+            email VARCHAR(191) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            phone VARCHAR(30) NOT NULL DEFAULT '',
+            role VARCHAR(20) NOT NULL DEFAULT 'user',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY users_username_unique (username),
+            UNIQUE KEY users_email_unique (email)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        if ($this->db->exec($sql) === false) {
+            throw new RuntimeException('Cannot create users table: ' . ($this->db->errorInfo()[2] ?? 'unknown error'));
+        }
+    }
+
+    private function prepareUserQuery($sql) {
+        $stmt = $this->db->prepare($sql);
+        if ($stmt === false) {
+            throw new RuntimeException('Cannot prepare account query: ' . ($this->db->errorInfo()[2] ?? 'unknown error'));
+        }
+        return $stmt;
     }
 
     /**

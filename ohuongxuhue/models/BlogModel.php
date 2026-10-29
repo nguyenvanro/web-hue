@@ -2,7 +2,7 @@
 /**
  * Model quản lý bài viết Blog O Hương Xứ Huế
  * Gồm 2 chuyên mục: Góc Ẩm Thực & Góc Du Lịch
- * (Các bài viết cũ trong Góc Ẩm Thực đã được xóa theo yêu cầu)
+ * Nội dung chuyên mục được nạp từ các file JSON
  */
 
 class BlogModel extends BaseModel {
@@ -52,16 +52,36 @@ class BlogModel extends BaseModel {
     ];
 
     public function getAll($category = null) {
+        $authoredArticles = array_merge(
+            json_decode(file_get_contents(__DIR__ . '/food-articles.json'), true) ?: [],
+            json_decode(file_get_contents(__DIR__ . '/travel-articles.json'), true) ?: []
+        );
+        $imageBase = function_exists('get_template_directory_uri') ? get_template_directory_uri() . '/assets/images/' : './assets/images/';
+        foreach ($authoredArticles as &$article) {
+            if (!preg_match('~^https?://~', $article['image'])) {
+                $article['image'] = $imageBase . $article['image'];
+            }
+            $article['url'] = self::articleUrl($article['id']);
+            $article['content'] = preg_replace_callback('/href="\?controller=blog&amp;id=(\d+)"/', function ($match) {
+                return 'href="' . htmlspecialchars(self::articleUrl((int) $match[1]), ENT_QUOTES, 'UTF-8') . '"';
+            }, $article['content']);
+        }
+        unset($article);
+        $authoredIds = array_column($authoredArticles, 'id');
+        $legacyBlogs = array_filter(self::$blogs, function ($blog) use ($authoredIds) {
+            return !in_array($blog['id'], $authoredIds, true);
+        });
+        $allBlogs = array_merge($authoredArticles, $legacyBlogs);
         if ($category) {
             $filtered = [];
-            foreach (self::$blogs as $b) {
+            foreach ($allBlogs as $b) {
                 if ($b['category'] === $category || ($b['category_slug'] ?? '') === $category) {
                     $filtered[] = $b;
                 }
             }
             return $filtered;
         }
-        return self::$blogs;
+        return $allBlogs;
     }
 
     public function getCategories() {
@@ -73,17 +93,26 @@ class BlogModel extends BaseModel {
     }
 
     public function getFeatured() {
-        foreach (self::$blogs as $blog) {
+        foreach ($this->getAll() as $blog) {
             if (!empty($blog['featured'])) {
                 return $blog;
             }
         }
-        return self::$blogs[0] ?? null;
+        return $this->getAll()[0] ?? null;
+    }
+
+    public static function articleUrl($id, $absolute = false) {
+        $query = '?controller=blog&id=' . (int) $id;
+        if (function_exists('home_url')) return home_url('/' . $query);
+        if (!$absolute) return 'index.php' . $query;
+        $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://';
+        $directory = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
+        return $scheme . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim($directory, '/') . '/index.php' . $query;
     }
 
     public function getById($id) {
         $id = (int)$id;
-        foreach (self::$blogs as $blog) {
+        foreach ($this->getAll() as $blog) {
             if ($blog['id'] === $id) {
                 return $blog;
             }

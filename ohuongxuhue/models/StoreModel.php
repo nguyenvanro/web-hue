@@ -14,7 +14,7 @@ class StoreModel extends BaseModel {
             'phone'       => '0234 388 9999 - 0905 123 456',
             'email'       => 'codo@ohuongxuhue.vn',
             'hours'       => '06:30 - 22:30 (Mở cửa tất cả các ngày)',
-            'image'       => 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
+            'image'       => 'khong-gian-tra-banh-hue.png',
             'services'    => [
                 'Không gian thưởng trà cung đình miễn phí',
                 'Xem nghệ nhân làm mè xửng tại chỗ',
@@ -24,19 +24,20 @@ class StoreModel extends BaseModel {
         ],
         [
             'id'          => 2,
-            'name'        => 'Không Gian Làng Nghề Kim Long',
+            'name'        => 'Không Gian Làng Nghề Bánh Ép Huế',
             'type'        => 'Cơ sở sản xuất & Showroom Quà Tặng',
             'badge'       => 'Làng Nghề Truyền Thống',
             'address'     => '45 Đường Kim Long, Phường Kim Long, Thành phố Huế (Cách chùa Thiên Mụ 500m)',
             'phone'       => '0234 359 8888',
             'email'       => 'kimlong@ohuongxuhue.vn',
             'hours'       => '07:00 - 21:00 (Mỗi ngày)',
-            'image'       => 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80',
+            'image'       => 'nghe-nhan-lam-banh.jpeg',
+            'services_title' => '✨ Tiện ích & Trải nghiệm bánh ép Huế:',
             'services'    => [
-                'Trải nghiệm gói bánh lọc cùng nghệ nhân',
-                'Mua mè xửng nóng hổi vừa mới ra lò',
-                'Bãi đỗ xe ô tô & xe du lịch 45 chỗ rộng rãi',
-                'Miễn phí thử các vị mắm & bánh đặc sản'
+                'Tìm hiểu cách làm bánh ép Huế truyền thống',
+                'Quan sát thao tác ép bánh trên khuôn gang của người thợ',
+                'Gợi ý thưởng thức bánh ép cùng rau và nước chấm',
+                'Tư vấn chọn bánh ép và đóng gói đặc sản làm quà'
             ]
         ],
         [
@@ -48,7 +49,7 @@ class StoreModel extends BaseModel {
             'phone'       => '0938 789 101',
             'email'       => 'hcm@ohuongxuhue.vn',
             'hours'       => '08:00 - 21:30',
-            'image'       => 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80',
+            'image'       => 'trung-bay-dac-san-hue.png',
             'services'    => [
                 'Giao nhanh 2h nội thành TP.HCM',
                 'Đầy đủ mặt hàng tươi & khô chuyển từ Huế vào mỗi sáng',
@@ -64,7 +65,7 @@ class StoreModel extends BaseModel {
             'phone'       => '0912 345 678',
             'email'       => 'hanoi@ohuongxuhue.vn',
             'hours'       => '08:00 - 21:30',
-            'image'       => 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
+            'image'       => 'dong-goi-qua-bieu-hue.png',
             'services'    => [
                 'Giao hàng nội thành Hà Nội trong ngày',
                 'Đặc sản gửi tàu hỏa & máy bay tươi ngon',
@@ -74,6 +75,12 @@ class StoreModel extends BaseModel {
     ];
 
     public function getAll() {
-        return self::$stores;
+        $imageUrl = function_exists('get_template_directory_uri')
+            ? get_template_directory_uri() . '/assets/images/stores-ai'
+            : '../images/stores-ai';
+        return array_map(function ($store) use ($imageUrl) {
+            $store['image'] = $imageUrl . '/' . $store['image'];
+            return $store;
+        }, self::$stores);
     }
 }

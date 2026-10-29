@@ -28,8 +28,9 @@ $stores    = $stores ?? [];
             <?php foreach ($stores as $s): ?>
                 <div class="store-card">
                     <div class="store-img-wrapper">
-                        <img src="<?php echo htmlspecialchars($s['image']); ?>" alt="<?php echo htmlspecialchars($s['name']); ?>">
+                        <img src="<?php echo htmlspecialchars($s['image']); ?>" alt="<?php echo htmlspecialchars('Ảnh minh họa trải nghiệm đặc sản Huế — ' . $s['name']); ?>" loading="lazy" decoding="async">
                         <span class="store-badge"><?php echo htmlspecialchars($s['badge']); ?></span>
+                        <span class="store-image-caption">Ảnh minh họa</span>
                     </div>
 
                     <div class="store-body">
@@ -64,7 +65,7 @@ $stores    = $stores ?? [];
 
                         <!-- Các tiện ích nổi bật -->
                         <div class="store-services-box">
-                            <strong>✨ Tiện ích & Trải nghiệm miễn phí:</strong>
+                            <strong><?php echo htmlspecialchars($s['services_title'] ?? '✨ Tiện ích & Trải nghiệm miễn phí:'); ?></strong>
                             <ul>
                                 <?php foreach ($s['services'] as $srv): ?>
                                     <li>✓ <?php echo htmlspecialchars($srv); ?></li>
@@ -73,7 +74,7 @@ $stores    = $stores ?? [];
                         </div>
 
                         <div class="store-card-actions">
-                            <a href="tel:0905123456" class="btn-call-store">📞 Gọi Đặt Bàn / Giữ Bánh</a>
+                            <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', explode(' - ', $s['phone'])[0])); ?>" class="btn-call-store">📞 Gọi Đặt Bàn / Giữ Bánh</a>
                             <a href="https://maps.google.com/?q=<?php echo urlencode($s['address']); ?>" target="_blank" class="btn-direct-map">🗺️ Chỉ Đường</a>
                         </div>
                     </div>

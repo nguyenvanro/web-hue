@@ -71,14 +71,8 @@ $home_url  = function_exists('home_url') ? home_url('/') : 'index.php';
                 <div class="story-media-col">
                     <div class="media-stack">
                         <div class="media-card-main">
-                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=700&q=80" alt="Ẩm thực Huế truyền thống">
+                            <img src="<?php echo esc_url($theme_uri); ?>/assets/images/about/Banh_Trang_Truyen_Thong.jpg" alt="Bánh tráng truyền thống">
                             <div class="media-caption">Gìn giữ nét đẹp bánh truyền thống cung đình</div>
-                        </div>
-                        <div class="media-card-floating">
-                            <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80" alt="Mè xửng và trà Huế">
-                            <div class="floating-badge">
-                                <span>🌾 100% Thủ Công</span>
-                            </div>
                         </div>
                     </div>
                 </div>

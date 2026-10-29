@@ -1,0 +1,72 @@
+.ohx-receipt-ready .ohx-receipt-superseded,
+.ohx-receipt-ready .ohx-receipt [hidden],
+.ohx-receipt-ready .ohx-receipt #ez-toc-container { display: none !important; }
+.ohx-receipt-ready .wc-content-container { max-width: 1040px !important; padding: 0 20px !important; }
+.ohx-receipt-ready .wc-page-master { background: #faf7f1 !important; padding-top: 30px; padding-bottom: 40px !important; }
+.ohx-receipt { max-width: 1000px; margin: 0 auto; color: #382b2b; font-family: 'Be Vietnam Pro', Arial, sans-serif; }
+.ohx-receipt * { box-sizing: border-box; }
+.ohx-receipt-header { display: flex; align-items: center; gap: 16px; padding: 25px 28px; background: #fff; border: 1px solid #ece5da; border-bottom: 0; border-radius: 18px 18px 0 0; }
+.ohx-receipt-check { display: grid; place-items: center; width: 50px; height: 50px; flex: 0 0 50px; border-radius: 50%; background: #f8edcc; color: #7a1e2e; font-size: 26px; font-weight: 700; }
+.ohx-receipt-eyebrow { margin: 0 0 5px !important; color: #94721f; font-size: 10px; font-weight: 800; letter-spacing: 1.4px; }
+.ohx-receipt-header h1 { margin: 0 0 6px !important; padding: 0 !important; color: #4a0e17; font-size: clamp(22px, 3vw, 28px); font-weight: 800; line-height: 1.3; }
+.ohx-receipt-intro { margin: 0 !important; color: #84726b; font-size: 13px; line-height: 1.6; }
+.ohx-receipt-badge { margin-left: auto; padding: 7px 12px; border: 1px solid #ead6a1; border-radius: 20px; background: #fff8e4; color: #795818; font-size: 11px; font-weight: 700; line-height: 1.5; text-align: center; }
+.ohx-receipt-badge[data-state="paid"] { color: #276146; border-color: #c9e4d3; background: #edf7f0; }
+.ohx-receipt-badge[data-state="attention"] { color: #8d3030; border-color: #efd2cc; background: #fff1ed; }
+.ohx-receipt-meta { display: grid; grid-template-columns: .8fr 1fr 1.2fr; gap: 0; margin: 0 0 18px !important; padding: 20px 28px; border: 1px solid #ece5da; border-radius: 0 0 18px 18px; background: #fff; }
+.ohx-receipt-meta > div { padding: 0 20px; border-right: 1px solid #eee8df; }
+.ohx-receipt-meta > div:first-child { padding-left: 0; }
+.ohx-receipt-meta > div:last-child { border: 0; padding-right: 0; }
+.ohx-receipt-meta dt { color: #89766f; font-size: 11px; font-weight: 400; margin-bottom: 8px; }
+.ohx-receipt-meta dd { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.5; color: #493331; }
+.ohx-receipt-meta > div:nth-child(2) dd { color: #7a1e2e; font-size: 23px; line-height: 1.2; }
+.ohx-receipt-payment { margin: 18px 0; padding: 24px 28px 0; background: #fff; border: 1px solid #ece5da; border-radius: 18px; overflow: hidden; }
+.ohx-receipt-payment > h2 { margin: 0 0 8px; padding: 0; color: #4a0e17; font-family: inherit; font-size: 18px; font-weight: 700; }
+.ohx-receipt-hint { margin: 0 0 20px !important; color: #89766f; font-size: 12px; line-height: 1.6; }
+.ohx-receipt-payment-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 30px; align-items: center; padding-bottom: 18px; }
+.ohx-receipt-payment-grid > section { margin: 0 !important; min-width: 0; }
+.ohx-receipt #qrcode { background: #fff; }
+.ohx-receipt #qrcode img { display: block; width: 220px !important; max-width: 100%; height: auto !important; margin: 0 auto; border: 1px solid #eee8df; border-radius: 10px; padding: 8px; }
+.ohx-receipt #downloadQR { display: inline-block !important; position: static !important; margin: 10px auto 0 !important; width: auto !important; }
+.ohx-receipt #btnDownloadQR { display: inline-block; width: auto !important; background: #fff !important; color: #7a1e2e !important; border: 1px solid #e2d3cb !important; border-radius: 7px !important; padding: 9px 14px !important; font: inherit; font-size: 12px; font-weight: 600; box-shadow: none; line-height: 1.4 !important; cursor: pointer; }
+.ohx-receipt .woocommerce-vietqr-bank-details table { width: 100% !important; margin: 0 !important; border: 0 !important; border-collapse: collapse; font-size: 13px !important; }
+.ohx-receipt .woocommerce-vietqr-bank-details td { padding: 12px 4px !important; border: 0 !important; border-bottom: 1px solid #f0eae1 !important; text-align: left !important; vertical-align: middle; width: auto !important; line-height: 1.6; overflow-wrap: anywhere; }
+.ohx-receipt .woocommerce-vietqr-bank-details td:first-child { width: 36% !important; color: #89766f !important; }
+.ohx-receipt .woocommerce-vietqr-bank-details td:first-child strong { color: inherit !important; font-weight: 400; }
+.ohx-receipt .woocommerce-vietqr-bank-details td:last-child { color: #43302c; font-weight: 700; }
+.ohx-receipt .woocommerce-vietqr-bank-details tr:last-child td { border-bottom: 0 !important; }
+.ohx-receipt-copy { display: inline-block; margin: 4px 0 4px 10px; padding: 4px 7px; border: 1px solid #e5d9ce; border-radius: 5px; background: #fffaf1; color: #7a1e2e; font: inherit; font-size: 10px; cursor: pointer; }
+.ohx-receipt-controls { display: flex; align-items: center; gap: 14px; padding: 14px 0; }
+.ohx-receipt-payment > .ohx-receipt-controls { margin: 0 -28px; padding: 14px 28px; border-top: 1px solid #eee8df; background: #fffdf8; }
+.ohx-receipt-refresh { flex: 0 0 auto; padding: 9px 13px; border: 1px solid #ddcbc1; border-radius: 7px; background: #fff; color: #7a1e2e; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.ohx-receipt-refresh:disabled { opacity: .5; cursor: wait; }
+.ohx-receipt-status { margin: 0 !important; font-size: 11px; line-height: 1.6; color: #89766f; }
+.ohx-receipt-details { margin: 12px 0; padding: 0 22px; border: 1px solid #ece5da; border-radius: 12px; background: #fff; }
+.ohx-receipt-details > summary { padding: 17px 0; font-size: 13px; font-weight: 600; cursor: pointer; color: #4a0e17; }
+.ohx-receipt-details[open] > summary { border-bottom: 1px solid #eee8df; margin-bottom: 18px; }
+.ohx-receipt-details section { margin: 0 0 18px !important; padding: 0 !important; width: 100%; }
+.ohx-receipt-details h2 { font-size: 15px !important; margin: 0 0 14px !important; }
+.ohx-receipt-details table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ohx-receipt-details th, .ohx-receipt-details td { padding: 10px; text-align: left; border: 1px solid #eee8df; }
+.ohx-receipt-details address { padding: 0 !important; border: 0 !important; font-size: 13px; font-style: normal; line-height: 1.8; }
+.ohx-receipt-details .woocommerce-column { width: 100% !important; float: none !important; }
+.ohx-receipt-actions { display: flex; justify-content: center; align-items: center; gap: 22px; padding: 18px 0 0; }
+.ohx-receipt-actions a { color: #7a1e2e; font-size: 13px; text-decoration: none; font-weight: 600; }
+.ohx-receipt-actions .ohx-receipt-shop { padding: 12px 20px; border-radius: 8px; background: #7a1e2e; color: #fff; }
+.ohx-receipt button:focus-visible, .ohx-receipt a:focus-visible, .ohx-receipt summary:focus-visible { outline: 3px solid #d4af37; outline-offset: 3px; }
+@media (max-width: 640px) {
+    .ohx-receipt-ready .wc-content-container { padding: 0 12px !important; }
+    .ohx-receipt-ready .wc-page-master { padding-top: 18px; }
+    .ohx-receipt-header { display: grid; grid-template-columns: 40px minmax(0, 1fr); padding: 20px 16px; gap: 12px; }
+    .ohx-receipt-header > div { min-width: 0; }
+    .ohx-receipt-check { width: 40px; height: 40px; flex-basis: 40px; }
+    .ohx-receipt-badge { grid-column: 2; margin-left: 0; justify-self: start; }
+    .ohx-receipt-meta { grid-template-columns: 1fr 1fr; gap: 18px 12px; padding: 18px 16px; }
+    .ohx-receipt-meta > div { border: 0; padding: 0; }
+    .ohx-receipt-meta > div:last-child { grid-column: 1 / -1; }
+    .ohx-receipt-payment { padding: 20px 16px 0; }
+    .ohx-receipt-payment-grid { grid-template-columns: 1fr; gap: 18px; }
+    .ohx-receipt-payment > .ohx-receipt-controls { margin: 0 -16px; padding: 14px 16px; }
+    .ohx-receipt-controls { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .ohx-receipt-details { padding: 0 16px; }
+}
